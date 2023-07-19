@@ -14,7 +14,7 @@ Color bgRayColor(const Ray& r) {
     return (1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0);
 }
 
-Color rayColor(const Ray& ray, const HittableList& world) {
+Color rayColor(const Ray& ray, const Hittable& world) {
     HitRecord rec;
 
     if (world.hit(ray, 0, infinity, rec)) {
