@@ -6,14 +6,14 @@
 double hitSphere(const Point& center, double radius, const Ray& r) {
     Vec3 oc = r.origin() - center;
     auto a = glm::dot(r.direction(), r.direction());
-    auto b = 2.0 * glm::dot(oc, r.direction());
+    auto half_b = glm::dot(oc, r.direction());
     auto c = glm::dot(oc, oc) - radius * radius;
-    auto discr = b*b - 4*a*c;
+    auto discr = half_b*half_b - a*c;
 
     if (discr < 0) {
         return -1.0;
     } else {
-        return (-b - sqrt(discr) )/ (2.0*a);
+        return (-half_b - sqrt(discr) )/ (a);
     }
 }
 
