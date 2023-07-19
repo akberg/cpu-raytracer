@@ -1,10 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/vec3.hpp>
-
-using Point = glm::dvec3;
-using Vec3 = glm::dvec3;
+#include "rtweekend.hpp"
 
 class Ray {
 public:

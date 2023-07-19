@@ -1,21 +1,12 @@
 #include <iostream>
+#include <glm/glm.hpp>
 
-#include "Color.hpp"
-#include "Ray.hpp"
+#include "color.hpp"
+#include "ray.hpp"
+#include "rtweekend.hpp"
+#include "hittableList.hpp"
+#include "sphere.hpp"
 
-double hitSphere(const Point& center, double radius, const Ray& r) {
-    Vec3 oc = r.origin() - center;
-    auto a = glm::dot(r.direction(), r.direction());
-    auto half_b = glm::dot(oc, r.direction());
-    auto c = glm::dot(oc, oc) - radius * radius;
-    auto discr = half_b*half_b - a*c;
-
-    if (discr < 0) {
-        return -1.0;
-    } else {
-        return (-half_b - sqrt(discr) )/ (a);
-    }
-}
 
 Color bgRayColor(const Ray& r) {
     Vec3 unit_direction = glm::normalize(r.direction());
@@ -23,15 +14,15 @@ Color bgRayColor(const Ray& r) {
     return (1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0);
 }
 
-Color rayColor(const Ray& r) {
-    auto t = hitSphere(Point(0, 0, -1), 0.5, r);
+Color rayColor(const Ray& ray, const HittableList& world) {
+    HitRecord rec;
 
-    if (t > 0.0) {
-        Vec3 n = glm::normalize(r.at(t) - Vec3(0, 0, -1));
-        return 0.5*Color(n.x+1, n.y+1, n.z+1);
+    if (world.hit(ray, 0, infinity, rec)) {
+        Vec3 n = glm::normalize(ray.at(rec.t) - Vec3(0, 0, -1));
+        return 0.5*(rec.normal + Color(1, 1, 1));
     }
 
-    return bgRayColor(r);
+    return bgRayColor(ray);
 }
 
 
@@ -44,8 +35,13 @@ int main(int argc, char* argv[]) {
     // Image
 
     const auto aspect_ratio = 16.0 / 9.0;
-    const int image_width   = 600;
+    const int image_width   = 800;
     const int image_height  = static_cast<int>(image_width / aspect_ratio);
+
+    // World
+    HittableList world;
+    world.add(make_shared<Sphere>(Point(0, 0, -1), 0.5));
+    world.add(make_shared<Sphere>(Point(0, -100.5, -1), 100.0));
 
     // Camera
 
@@ -71,7 +67,7 @@ int main(int argc, char* argv[]) {
             auto v = double(j)/(image_height-1);
             auto direction = lower_left_corner + u*horizontal + v*vertical;
             Ray r(origin, direction);
-            Color px_color = rayColor(r);
+            Color px_color = rayColor(r, world);
             // Color px_color(double(i)/(image_width-1), double(j)/(image_height-1), 0.25);
             writeColor(std::cout, px_color);
         }
