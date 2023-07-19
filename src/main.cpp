@@ -13,7 +13,7 @@ double hitSphere(const Point& center, double radius, const Ray& r) {
     if (discr < 0) {
         return -1.0;
     } else {
-        return (-b - sqrt(discr) / (2.0*a));
+        return (-b - sqrt(discr) )/ (2.0*a);
     }
 }
 
