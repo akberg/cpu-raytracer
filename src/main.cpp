@@ -7,11 +7,11 @@
 #include "hittableList.hpp"
 #include "sphere.hpp"
 
-
-Color bgRayColor(const Ray& r) {
-    Vec3 unit_direction = glm::normalize(r.direction());
-    auto t = 0.5*(unit_direction.y + 1.0);
-    return (1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0);
+Color bgRayColor(const Ray& r)
+{
+    Vec3 unit_direction = glm::normalize(r.direction);
+    auto t              = 0.5 * (unit_direction.y + 1.0);
+    return (1.0 - t) * Color(1.0, 1.0, 1.0) + t * Color(0.5, 0.7, 1.0);
 }
 
 Color rayColor(const Ray& ray, const Hittable& world) {

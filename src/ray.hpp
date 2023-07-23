@@ -4,19 +4,23 @@
 
 #include "rtweekend.hpp"
 
+/// @brief The Ray class
 class Ray {
 public:
     Ray() {};
+    /// @brief Create a new ray
+    /// @param origin
+    /// @param direction direction vector, normalized on assignment
     Ray(const Point& origin, const Vec3& direction)
-        : m_origin(origin), m_direction(glm::normalize(direction)) {};
-    Point origin() const { return m_direction; };
-    Vec3 direction() const { return m_direction; };
+        : origin(origin)
+        , direction(glm::normalize(direction)) {};
 
-    Point at(double t) const {
-        return m_origin + t * m_direction;
-    }
+    /// @brief Ray's position at time `t`
+    /// @param t
+    /// @return Point vector
+    Point at(double t) const { return origin + t * direction; }
 
-private:
-    Point m_origin;
-    Vec3  m_direction;
+public:
+    Point origin;
+    Vec3 direction;
 };

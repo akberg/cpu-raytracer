@@ -19,9 +19,9 @@ private:
 };
 
 bool Sphere::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const {
-    Vec3 oc = ray.origin() - center;
-    auto a = glm::dot(ray.direction(), ray.direction());
-    auto half_b = glm::dot(oc, ray.direction());
+    Vec3 oc = ray.origin - center;
+    auto a = glm::dot(ray.direction, ray.direction);
+    auto half_b = glm::dot(oc, ray.direction);
     auto c = glm::dot(oc, oc) - radius * radius;
     auto discr = half_b*half_b - a*c;
 
