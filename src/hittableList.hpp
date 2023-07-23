@@ -30,6 +30,7 @@ bool HittableList::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec)
             anyHit = true;
             closest = tempRec.t;
             rec = tempRec;
+            // std::cerr << "ray from " << ray.origin << " hit " << rec.p << std::endl;
         }
     }
 

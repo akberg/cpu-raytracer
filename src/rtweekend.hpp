@@ -4,6 +4,7 @@
 #include <memory>
 #include <limits>
 #include <cstdlib>
+#include <ostream>
 
 #include <glm/vec3.hpp>
 
@@ -12,6 +13,11 @@
 using Point = glm::dvec3;
 using Vec3 = glm::dvec3;
 using Color = glm::dvec3;
+
+std::ostream& operator<<(std::ostream& os, const Point& p) {
+    os << "Vec3 { " << p.x << ", " << p.y << ", " << p.z << " }";
+    return os;
+}
 
 // Usings
 
@@ -47,8 +53,15 @@ inline Vec3 randomVec3(double min, double max) {
 }
 
 inline Vec3 randomInUnitSphere() {
-    return glm::normalize(randomVec3(0.0, 1.0));
+    while (true) {
+        Vec3 v = randomVec3(-1.0, 1.0);
+        if (glm::length(v)*glm::length(v) < 1.0)
+            return v;
+    }
 }
+// inline Vec3 randomInUnitSphere() {
+//     return glm::normalize(randomVec3(0.0, 1.0));
+// }
 
 inline double clamp(double x, double min, double max) {
     if (x < min) return min;
