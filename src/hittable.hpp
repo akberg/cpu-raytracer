@@ -1,7 +1,11 @@
 #pragma once
 
-#include "rtweekend.hpp"
+#include "material.hpp"
+
 #include "ray.hpp"
+#include "rtweekend.hpp"
+
+class Material;
 
 struct HitRecord {
     Point p;
@@ -11,6 +15,7 @@ struct HitRecord {
      * it when colouring.
     */
     bool frontFace;
+    shared_ptr<Material> mat;
 
     inline void setFaceNormal(const Ray& ray, const Vec3& outwardNormal) {
         frontFace = glm::dot(ray.direction, outwardNormal) < 0;
