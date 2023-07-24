@@ -4,6 +4,8 @@
 
 #include <glm/glm.hpp>
 
+#include <ostream>
+
 /// @brief The Ray class. Direction is normalized on creation
 class Ray {
 public:
@@ -14,6 +16,10 @@ public:
     Ray(const Point& origin, const Vec3& direction)
         : origin(origin)
         , direction(glm::normalize(direction)) {};
+
+    friend std::ostream& operator<<(std::ostream& os, const Ray& ray) {
+        os << "Ray(origin: "<<ray.origin<<", direction: "<<ray.direction<<")";
+    }
 
     /// @brief Ray's position at time `t`
     /// @param t
