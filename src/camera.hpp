@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rtweekend.hpp"
 #include "ray.hpp"
+#include "rtweekend.hpp"
 
 class Camera {
 public:

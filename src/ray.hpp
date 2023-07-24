@@ -1,10 +1,10 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "rtweekend.hpp"
 
-/// @brief The Ray class
+#include <glm/glm.hpp>
+
+/// @brief The Ray class. Direction is normalized on creation
 class Ray {
 public:
     Ray() {};
@@ -21,6 +21,8 @@ public:
     Point at(double t) const { return origin + t * direction; }
 
 public:
-    Point origin;
-    Vec3 direction;
+    /// @brief Origin of ray
+    Point origin = Point(0,0,0);
+    /// @brief Unit vector in ray's direction
+    Vec3 direction = Vec3(1,0,0);
 };

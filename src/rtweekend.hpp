@@ -1,12 +1,12 @@
 #pragma once
 
-#include <cmath>
-#include <memory>
-#include <limits>
-#include <cstdlib>
-#include <ostream>
+#include <glm/glm.hpp>
 
-#include <glm/vec3.hpp>
+#include <cmath>
+#include <cstdlib>
+#include <limits>
+#include <memory>
+#include <ostream>
 
 // Types
 
@@ -14,7 +14,7 @@ using Point = glm::dvec3;
 using Vec3 = glm::dvec3;
 using Color = glm::dvec3;
 
-std::ostream& operator<<(std::ostream& os, const Point& p) {
+static std::ostream& operator<<(std::ostream& os, const Point& p) {
     os << "Vec3 { " << p.x << ", " << p.y << ", " << p.z << " }";
     return os;
 }
@@ -35,7 +35,7 @@ inline double degreesToRadians(double degrees) {
     return degrees * pi / 180.0;
 }
 
-/**Return a random float in the [0, 1) */
+/// @brief Return a random float in the [0, 1)
 inline double randomDouble() {
     return rand() / (RAND_MAX + 1.0);
 }
@@ -55,13 +55,29 @@ inline Vec3 randomVec3(double min, double max) {
 inline Vec3 randomInUnitSphere() {
     while (true) {
         Vec3 v = randomVec3(-1.0, 1.0);
-        if (glm::length(v)*glm::length(v) < 1.0)
+        if (glm::dot(v, v) < 1.0)
             return v;
     }
 }
 // inline Vec3 randomInUnitSphere() {
 //     return glm::normalize(randomVec3(0.0, 1.0));
 // }
+
+inline Vec3 randomUnitVector() {
+    return glm::normalize(randomInUnitSphere());
+}
+
+/// @brief Return true if the vector is near zero in all dimensions
+/// @param v
+/// @return
+inline bool vec3NearZero(const Vec3& v) {
+    const double s = 1e-8;
+    return (fabs(v.x) < s) && (fabs(v.y) < s) && (fabs(v.z) < s);
+}
+
+inline Vec3 reflect(const Vec3& v, const Vec3& n) {
+    return v - 2 * glm::dot(v, n) * n;
+}
 
 inline double clamp(double x, double min, double max) {
     if (x < min) return min;
