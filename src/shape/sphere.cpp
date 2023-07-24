@@ -1,22 +1,4 @@
-#pragma once
-
-#include <glm/glm.hpp>
-
-#include "hittable.hpp"
-#include "rtweekend.hpp"
-
-
-class Sphere : public Hittable {
-public:
-    Sphere() {}
-    Sphere(Point c, double r) : center(c), radius(r) {}
-
-    virtual bool hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const override;
-
-private:
-    Point center;
-    double radius;
-};
+#include "sphere.hpp"
 
 bool Sphere::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const {
     Vec3 oc = ray.origin - center;
@@ -46,6 +28,7 @@ bool Sphere::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const
     rec.p = ray.at(rec.t);
     Vec3 outwardNormal = (rec.p - center) / radius;
     rec.setFaceNormal(ray, outwardNormal);
+    rec.mat = mat;
 
     return true;
 }

@@ -15,5 +15,8 @@ subdir('src')
 
 executable('rt-cpu',
     sources,
+    include_directories: [
+        'src'
+    ],
     install: false,
 )

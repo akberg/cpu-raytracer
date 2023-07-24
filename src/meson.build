@@ -1,3 +1,4 @@
 sources += files(
-    'main.cpp'
+    'main.cpp',
+    'shape/sphere.cpp',
 )
