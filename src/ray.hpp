@@ -19,6 +19,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const Ray& ray) {
         os << "Ray(origin: "<<ray.origin<<", direction: "<<ray.direction<<")";
+        return os;
     }
 
     /// @brief Ray's position at time `t`
