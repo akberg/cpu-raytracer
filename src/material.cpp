@@ -6,24 +6,24 @@
 #include "material.hpp"
 
 bool Lambertian::scatter(
-    const Vec3& vIn, const Vec3& normal, const Point& p, Color& attenuance, Ray& scattered
+    const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
 ) const {
-    Vec3 scatterDirection = normal + randomUnitVector();
+    Vec3 scatterDirection = rec.normal + randomUnitVector();
 
     // Catch degenerate scatter direction
     if (vec3NearZero(scatterDirection))
-        scatterDirection = normal;
+        scatterDirection = rec.normal;
 
-    scattered = Ray(p, scatterDirection);
+    scattered = Ray(rec.p, scatterDirection);
     attenuance = albedo;
     return true;
 }
 
 bool Metal::scatter(
-    const Vec3& vIn, const Vec3& normal, const Point& p, Color& attenuance, Ray& scattered
+    const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
 ) const {
-    Vec3 reflected = reflect(vIn, normal);
-    scattered = Ray(p, reflected);
+    Vec3 reflected = reflect(vIn, rec.normal);
+    scattered = Ray(rec.p, reflected);
     attenuance = albedo;
-    return (glm::dot(scattered.direction, normal) > 0);
+    return (glm::dot(scattered.direction, rec.normal) > 0);
 }

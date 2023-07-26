@@ -3,6 +3,8 @@
 #include "ray.hpp"
 #include "rtweekend.hpp"
 
+#include "hittable.hpp"
+
 
 // If we want different objects to have different materials, we have a design
 // decision. We could have a universal material with lots of parameters and
@@ -14,7 +16,7 @@
 class Material {
 public:
     virtual bool scatter(
-        const Vec3& vIn, const Vec3& normal, const Point& p, Color& attenuance, Ray& scattered
+        const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
     ) const = 0;
 };
 
@@ -30,7 +32,7 @@ public:
     /// @param scattered Return scattered ray
     /// @return true if valid
     bool scatter(
-        const Vec3& vIn, const Vec3& normal, const Point& p, Color& attenuance, Ray& scattered
+        const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
     ) const override;
 
 private:
@@ -49,9 +51,35 @@ public:
     /// @param scattered Return scattered ray
     /// @return true if valid
     bool scatter(
-        const Vec3& vIn, const Vec3& normal, const Point& p, Color& attenuance, Ray& scattered
+        const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
     ) const override;
 
 private:
     Color albedo;
+};
+
+class TwoSidedMaterial : public Material {
+public:
+    TwoSidedMaterial(shared_ptr<Material> mFront, shared_ptr<Material> mBack) : materialFront(mFront), materialBack(mBack) {}
+
+    /// @brief Calculate scatter ray according to material properties
+    /// @param vIn Incoming ray
+    /// @param normal Normal at hit point
+    /// @param p Hit point
+    /// @param attenuance Color of material
+    /// @param scattered Return scattered ray
+    /// @return true if valid
+    bool scatter(
+        const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
+    ) const override {
+        if (rec.frontFace)
+            return materialFront->scatter(vIn, rec, attenuance, scattered);
+        else
+            return materialBack->scatter(vIn, rec, attenuance, scattered);
+
+    }
+
+public:
+    shared_ptr<Material> materialFront;
+    shared_ptr<Material> materialBack;
 };

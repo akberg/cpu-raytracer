@@ -1,8 +1,10 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "hittableList.hpp"
+#include "material.hpp"
 #include "ray.hpp"
 #include "rtweekend.hpp"
+#include "shape/plane.hpp"
 #include "shape/sphere.hpp"
 
 #include <glm/glm.hpp>
@@ -31,7 +33,7 @@ Color rayColor(const Ray& ray, const Hittable& world, int depth = MAX_RAY_DEPTH)
         Ray scattered;
         Color attenuance;
 
-        if (rec.mat->scatter(ray.direction, rec.normal, rec.p, attenuance, scattered))
+        if (rec.mat->scatter(ray.direction, rec, attenuance, scattered))
             return attenuance * rayColor(scattered, world, depth - 1);
 
         return Color(0,0,0);
@@ -51,18 +53,25 @@ int main(int argc, char* argv[])
     // Image
 
     const auto aspect_ratio   = 16.0 / 9.0;
-    const int image_width     = 400;
+    const int image_width     = 800;
     const int image_height    = static_cast<int>(image_width / aspect_ratio);
-    const int samplesPerPixel = 100;
+    const int samplesPerPixel = 50;
 
     // World
+    auto matLambDark = make_shared<Lambertian>(Color(0.1, 0.1, 0.1));
     auto matLambRed = make_shared<Lambertian>(Color(1.0, 0.05, 0.05));
-    auto matMetRed = make_shared<Metal>(Color(1.0, 0.6, 0.6));
     auto matLambGreen = make_shared<Lambertian>(Color(0.05, 1.0,0.05));
+    auto matLambBlue = make_shared<Lambertian>(Color(0.05, 0.05,1.0));
+    auto matMetRed = make_shared<Metal>(Color(1.0, 0.6, 0.6));
+    auto matMetDark = make_shared<Metal>(Color(0.2, 0.2, 0.2));
+    auto matRG     = make_shared<TwoSidedMaterial>(matMetDark, matLambGreen);
     HittableList world;
-    world.add(make_shared<Sphere>(Point(1, 0, -1), 0.5, matMetRed));
-    world.add(make_shared<Sphere>(Point(-1, 0, -1), 0.5, matLambRed));
-    world.add(make_shared<Sphere>(Point(0, -100.5, -1), 100.0, matLambGreen));
+    world.add(make_shared<Sphere>(Point( 0.5, -0.5, -2), 0.2, matLambRed));
+    world.add(make_shared<Sphere>(Point(-0.5,  0.5, -2), 0.2, matLambGreen));
+    world.add(make_shared<Sphere>(Point(-0.5, -0.5, -1), 0.2, matLambBlue));
+    world.add(make_shared<Sphere>(Point(-0.5, -0.5, -2), 0.2, matLambDark));
+    // world.add(make_shared<Sphere>(Point(0, -100.5, -1), 100.0, matLambRed));
+    world.add(make_shared<Plane>(Point(0, -1, -4), Vec3(0, 0, 1), matRG));
 
     // Camera
 
@@ -76,6 +85,12 @@ int main(int argc, char* argv[])
 
     std::cout << "P3\n"
               << image_width << ' ' << image_height << "\n255\n";
+
+    std::cerr << cam << std::endl;
+    std::cerr << "Corner rays:\n\tl.l. " << cam.getRay(0, 0).direction
+              << "\n\tt.l. " << cam.getRay(image_height, 0).direction
+              << "\n\tl.r. " << cam.getRay(0, image_width).direction
+              << "\n\tt.r. " << cam.getRay(image_height, image_width).direction << "\n";
 
     for (int j = image_height - 1; j >= 0; --j) {
         std::cerr << "Row " << image_height - j << " / " << image_height << std::endl;
@@ -92,3 +107,5 @@ int main(int argc, char* argv[])
         }
     }
 }
+
+// void renderScene(Camera& cam, HittableList& world)

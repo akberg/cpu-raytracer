@@ -1,10 +1,9 @@
 #pragma once
 
-#include "material.hpp"
-
 #include "ray.hpp"
 #include "rtweekend.hpp"
 
+// Forward declaration for backwards reference
 class Material;
 
 struct HitRecord {

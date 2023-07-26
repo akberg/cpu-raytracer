@@ -1,5 +1,7 @@
 #include "sphere.hpp"
 
+Sphere::Sphere(Point c, double r, shared_ptr<Material> m) : center(c), radius(r), mat(m) {}
+
 bool Sphere::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const {
     Vec3 oc = ray.origin - center;
     auto a = glm::dot(ray.direction, ray.direction);
