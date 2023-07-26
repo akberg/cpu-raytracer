@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     auto matLambGreen = make_shared<Lambertian>(Color(0.05, 1.0,0.05));
     auto matLambBlue = make_shared<Lambertian>(Color(0.05, 0.05,1.0));
     auto matMetRed = make_shared<Metal>(Color(1.0, 0.6, 0.6));
-    auto matMetDark = make_shared<Metal>(Color(0.2, 0.2, 0.2));
+    auto matMetDark = make_shared<Metal>(Color(0.5, 0.5, 0.5), 0.2);
     auto matRG     = make_shared<TwoSidedMaterial>(matMetDark, matLambGreen);
     HittableList world;
     world.add(make_shared<Sphere>(Point( 0.5, -0.5, -2), 0.2, matLambRed));
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
     world.add(make_shared<Sphere>(Point(-0.5, -0.5, -1), 0.2, matLambBlue));
     world.add(make_shared<Sphere>(Point(-0.5, -0.5, -2), 0.2, matLambDark));
     // world.add(make_shared<Sphere>(Point(0, -100.5, -1), 100.0, matLambRed));
-    world.add(make_shared<Plane>(Point(0, -1, -4), Vec3(0, 0, 1), matRG));
+    world.add(make_shared<Plane>(Point(0, -1, -4), Vec3(0, 1, 0), matRG));
 
     // Camera
 
@@ -82,9 +82,7 @@ int main(int argc, char* argv[])
     Camera cam;
 
     // Render
-
-    std::cout << "P3\n"
-              << image_width << ' ' << image_height << "\n255\n";
+    PPMImage img(image_width, image_height);
 
     std::cerr << cam << std::endl;
     std::cerr << "Corner rays:\n\tl.l. " << cam.getRay(0, 0).direction
@@ -102,10 +100,10 @@ int main(int argc, char* argv[])
                 auto r = cam.getRay(u, v);
                 pxColor += rayColor(r, world);
             }
-            // Color px_color(double(i)/(image_width-1), double(j)/(image_height-1), 0.25);
-            writeColor(std::cout, pxColor, samplesPerPixel);
+            img.setPixel(i, j, pxColor * (1.0 / samplesPerPixel));
         }
     }
+    img.writeImage(std::cout);
 }
 
 // void renderScene(Camera& cam, HittableList& world)
