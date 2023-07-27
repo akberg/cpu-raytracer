@@ -5,6 +5,7 @@
 
 #include "hittable.hpp"
 
+// TODO: Add texture coordinates in some way
 
 // If we want different objects to have different materials, we have a design
 // decision. We could have a universal material with lots of parameters and
@@ -35,13 +36,14 @@ public:
         const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
     ) const override;
 
-private:
+public:
     Color albedo;
 };
 
 class Metal : public Material {
 public:
     Metal(const Color& a) : albedo(a) {}
+    Metal(const Color& a, double f) : albedo(a), fuzz(f < 1 ? f : 1) {}
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
@@ -54,8 +56,15 @@ public:
         const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
     ) const override;
 
-private:
+    double getFuzz() const { return fuzz; }
+    double setFuzz(double f) {
+        fuzz = f < 1 ? f : 1;
+        return fuzz;
+    }
+public:
     Color albedo;
+private:
+    double fuzz = 0;
 };
 
 class TwoSidedMaterial : public Material {
@@ -71,15 +80,22 @@ public:
     /// @return true if valid
     bool scatter(
         const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
-    ) const override {
-        if (rec.frontFace)
-            return materialFront->scatter(vIn, rec, attenuance, scattered);
-        else
-            return materialBack->scatter(vIn, rec, attenuance, scattered);
-
-    }
+    ) const override;
 
 public:
     shared_ptr<Material> materialFront;
     shared_ptr<Material> materialBack;
+};
+
+class Dielectric : public Material {
+public:
+    Dielectric(double refractionIndex) : ir(refractionIndex) {}
+
+    virtual bool scatter(
+        const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
+    ) const override;
+
+public:
+    /// @brief Index of refraction
+    double ir;
 };
