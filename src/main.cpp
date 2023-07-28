@@ -53,9 +53,9 @@ int main(int argc, char* argv[])
     // Image
 
     const auto aspect_ratio   = 16.0 / 9.0;
-    const int image_width     = 800;
+    const int image_width     = 1000;
     const int image_height    = static_cast<int>(image_width / aspect_ratio);
-    const int samplesPerPixel = 50;
+    const int samplesPerPixel = 100;
 
     // World
     auto matLambDark = make_shared<Lambertian>(Color(0.1, 0.1, 0.1));
@@ -65,13 +65,18 @@ int main(int argc, char* argv[])
     auto matMetRed = make_shared<Metal>(Color(1.0, 0.6, 0.6));
     auto matMetDark = make_shared<Metal>(Color(0.5, 0.5, 0.5), 0.2);
     auto matRG     = make_shared<TwoSidedMaterial>(matMetDark, matLambGreen);
+    auto dielectric = make_shared<Dielectric>(1.5);
     HittableList world;
-    world.add(make_shared<Sphere>(Point( 0.5, -0.5, -2), 0.2, matLambRed));
-    world.add(make_shared<Sphere>(Point(-0.5,  0.5, -2), 0.2, matLambGreen));
-    world.add(make_shared<Sphere>(Point(-0.5, -0.5, -1), 0.2, matLambBlue));
-    world.add(make_shared<Sphere>(Point(-0.5, -0.5, -2), 0.2, matLambDark));
-    // world.add(make_shared<Sphere>(Point(0, -100.5, -1), 100.0, matLambRed));
-    world.add(make_shared<Plane>(Point(0, -1, -4), Vec3(0, 1, 0), matRG));
+    // Visualise axes:
+    // world.add(make_shared<Sphere>(Point( 0.5, -0.5, -2), 0.2, matLambRed));
+    // world.add(make_shared<Sphere>(Point(-0.5,  0.5, -2), 0.2, matLambGreen));
+    // world.add(make_shared<Sphere>(Point(-0.5, -0.5, -1), 0.2, matLambBlue));
+    // world.add(make_shared<Sphere>(Point(-0.5, -0.5, -2), 0.2, matLambDark));
+
+    world.add(make_shared<Sphere>(Point(-1, 0, -1), 0.5, dielectric));
+    world.add(make_shared<Sphere>(Point(1, 0, -1), 0.5, matMetRed));
+    world.add(make_shared<Sphere>(Point(0, -50.5, -1), 50.0, matMetDark));
+    world.add(make_shared<Plane>(Point(0, -0.5, -4), Vec3(0, 1, 0), matRG));
 
     // Camera
 
@@ -90,8 +95,9 @@ int main(int argc, char* argv[])
               << "\n\tl.r. " << cam.getRay(0, image_width).direction
               << "\n\tt.r. " << cam.getRay(image_height, image_width).direction << "\n";
 
-    for (int j = image_height - 1; j >= 0; --j) {
-        std::cerr << "Row " << image_height - j << " / " << image_height << std::endl;
+    // #pragma omp parallel for // TODO: This went slower for some reason
+    for (int j = 0; j < image_height; ++j) {
+        // std::cerr << "Row " << j << " / " << image_height << std::endl;
         for (int i = 0; i < image_width; ++i) {
             Color pxColor(0, 0, 0);
             for (int s = 0; s < samplesPerPixel; s++) {
