@@ -80,6 +80,18 @@ inline Vec3 reflect(const Vec3& v, const Vec3& n) {
     return v - 2 * glm::dot(v, n) * n;
 }
 
+/// @brief Implementing Snell's law for refraction: eta*sin(theta) = etai*sin(thetai).
+/// @param v
+/// @param n
+/// @param e eta over eta prime
+/// @return
+inline Vec3 refract(const Vec3& v, const Vec3& n, double e) {
+    auto cosTheta = fmin(glm::dot(-v, n), 1.0);
+    Vec3 rOutPerp = e * (v + cosTheta*n);
+    Vec3 rOutParallel = -sqrt(fabs(1.0 - glm::dot(rOutPerp, rOutPerp))) * n;
+    return rOutPerp + rOutParallel;
+}
+
 inline double clamp(double x, double min, double max) {
     if (x < min) return min;
     if (x > max) return max;
