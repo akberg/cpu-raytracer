@@ -7,9 +7,9 @@
 class Material;
 
 struct HitRecord {
-    Point p;
-    Vec3 normal;
-    double t;
+    Point p     = Point(0,0,0);
+    Vec3 normal = Vec3(1,0,0);
+    double t    = 0;
     /**Setting the front face when computing geometry, as opposed to computing
      * it when colouring.
     */
