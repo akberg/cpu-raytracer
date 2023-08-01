@@ -44,8 +44,17 @@ bool Dielectric::scatter(
     double refractionRatio = rec.frontFace ? (1.0/ir) : ir;
 
     Vec3 unitDirection = glm::normalize(vIn);
-    Vec3 refracted = refract(unitDirection, rec.normal, refractionRatio);
+    double cos_theta = fmin(glm::dot(-unitDirection, rec.normal), 1.0);
+    double sin_theta = sqrt(1.0 - cos_theta*cos_theta);
 
-    scattered = Ray(rec.p, refracted);
+    bool cannotRefract = refractionRatio * sin_theta > 1.0;
+    Vec3 direction;
+
+    if (cannotRefract || reflectance(cos_theta, refractionRatio) > randomDouble())
+        direction = reflect(unitDirection, rec.normal);
+    else
+        direction = refract(unitDirection, rec.normal, refractionRatio);
+
+    scattered = Ray(rec.p, direction);
     return true;
 }

@@ -98,4 +98,12 @@ public:
 public:
     /// @brief Index of refraction
     double ir;
+
+private:
+    static double reflectance(double cosine, double refIdx) {
+        // Schlick's approximation for reflectance
+        auto r0 = (1-refIdx) / (1+refIdx);
+        r0 = r0*r0;
+        return r0 + (1-r0)*pow((1 - cosine), 5.0);
+    }
 };
