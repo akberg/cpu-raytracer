@@ -19,6 +19,7 @@ public:
     virtual bool scatter(
         const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered
     ) const = 0;
+    virtual ~Material() = default;
 };
 
 class Lambertian : public Material {
@@ -69,7 +70,9 @@ private:
 
 class TwoSidedMaterial : public Material {
 public:
-    TwoSidedMaterial(shared_ptr<Material> mFront, shared_ptr<Material> mBack) : materialFront(mFront), materialBack(mBack) {}
+    TwoSidedMaterial(shared_ptr<Material> mFront, shared_ptr<Material> mBack)
+        : materialFront(mFront)
+        , materialBack(mBack) {}
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
