@@ -1,0 +1,20 @@
+---
+BasedOnStyle: webkit
+IndentWidth: 4
+---
+Language: Cpp
+AlignConsecutiveAssignments:
+    Enabled: true
+    AcrossEmptyLines: true
+    AcrossComments: false
+AllowShortCaseLabelsOnASingleLine: true
+# webkit default: never
+AllowShortIfStatementsOnASingleLine: WithoutElse
+BreakBeforeBraces: Custom
+PackConstructorInitializers: CurrentLine
+BraceWrapping:
+    # Following Rust style would be: false
+    AfterFunction: true
+    SplitEmptyFunction: false
+    SplitEmptyRecord: false
+ColumnLimit: 90

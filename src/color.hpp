@@ -40,9 +40,7 @@ public:
 
 class PPMImage : Image {
 public:
-    PPMImage(int imageWidth, int imageHeight)
-        : width(imageWidth)
-        , height(imageHeight)
+    PPMImage(int imageWidth, int imageHeight) : width(imageWidth), height(imageHeight)
     {
         image = new int[imageWidth * imageHeight];
     }
@@ -82,11 +80,6 @@ public:
                 g  = (px >> 16) & 0xff;
                 b  = (px >> 8) & 0xff;
                 os << r << " " << g << " " << b << "\n";
-                // Color px_color(double(i)/(image_width-1), double(j)/(image_height-1),
-                // 0.25);
-                // std::cout << "("<<i<<","<<j<<")\n";// << img[imageWidth*j+i] <<
-                // std::endl;
-                // writeColor(os, img[imageWidth*j+i]);
             }
         }
     }

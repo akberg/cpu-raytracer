@@ -5,13 +5,14 @@
 
 #include <glm/glm.hpp>
 
-
 class Sphere : public Hittable {
 public:
-    Sphere() {}
+    Sphere() { }
     Sphere(Point c, double r, shared_ptr<Material> m);
+    virtual ~Sphere() = default;
 
-    virtual bool hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const override;
+    virtual bool hit(
+        const Ray& ray, double tMin, double tMax, HitRecord& rec) const override;
 
 public:
     Point center;

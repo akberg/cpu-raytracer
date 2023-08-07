@@ -7,8 +7,9 @@
 
 #include <ostream>
 
-std::ostream& operator<<(std::ostream& os, const Ray& ray) {
-    os << "Ray(origin: "<<ray.origin<<", direction: "<<ray.direction<<")";
+std::ostream& operator<<(std::ostream& os, const Ray& ray)
+{
+    os << "Ray(origin: " << ray.origin << ", direction: " << ray.direction << ")";
     return os;
 }
 
@@ -24,8 +25,7 @@ Color rayColor(const Ray& ray, const Hittable& world, int depth)
     HitRecord rec;
 
     // Depth limit exceeded
-    if (depth <= 0)
-        return Color(0.0, 0.0, 0.0);
+    if (depth <= 0) return Color(0.0, 0.0, 0.0);
 
     if (world.hit(ray, 0.0001, infinity, rec)) {
         Ray scattered;
@@ -34,10 +34,8 @@ Color rayColor(const Ray& ray, const Hittable& world, int depth)
         if (rec.mat->scatter(ray.direction, rec, attenuance, scattered))
             return attenuance * rayColor(scattered, world, depth - 1);
 
-        return Color(0,0,0);
+        return Color(0, 0, 0);
     }
-    // if (depth < 40)
-    //     std::cerr << "d " << depth << " no hit, add bg " << bgRayColor(ray) << std::endl;
 
     return bgRayColor(ray);
 }

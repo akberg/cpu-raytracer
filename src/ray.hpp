@@ -18,10 +18,6 @@ public:
         , direction(glm::normalize(direction)) {};
 
     friend std::ostream& operator<<(std::ostream& os, const Ray& ray);
-    // {
-    //     os << "Ray(origin: "<<ray.origin<<", direction: "<<ray.direction<<")";
-    //     return os;
-    // }
 
     /// @brief Ray's position at time `t`
     /// @param t
@@ -30,9 +26,9 @@ public:
 
 public:
     /// @brief Origin of ray
-    Point origin = Point(0,0,0);
+    Point origin = Point(0, 0, 0);
     /// @brief Unit vector in ray's direction
-    Vec3 direction = Vec3(1,0,0);
+    Vec3 direction = Vec3(1, 0, 0);
 };
 
 struct Hittable;

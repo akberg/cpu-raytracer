@@ -24,9 +24,7 @@ public:
 
 class Lambertian : public Material {
 public:
-    Lambertian(const Color& a)
-        : albedo(a)
-    { }
+    Lambertian(const Color& a) : albedo(a) { }
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
@@ -44,13 +42,8 @@ public:
 
 class Metal : public Material {
 public:
-    Metal(const Color& a)
-        : albedo(a)
-    { }
-    Metal(const Color& a, double f)
-        : albedo(a)
-        , fuzz(f < 1 ? f : 1)
-    { }
+    Metal(const Color& a) : albedo(a) { }
+    Metal(const Color& a, double f) : albedo(a), fuzz(f < 1 ? f : 1) { }
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
@@ -100,9 +93,7 @@ public:
 
 class Dielectric : public Material {
 public:
-    Dielectric(double refractionIndex)
-        : ir(refractionIndex)
-    { }
+    Dielectric(double refractionIndex) : ir(refractionIndex) { }
 
     virtual bool scatter(const Vec3& vIn, const HitRecord& rec, Color& attenuance,
         Ray& scattered) const override;
