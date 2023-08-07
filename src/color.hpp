@@ -30,30 +30,22 @@ void writeColor(std::ostream& os, Color color, int samplesPerPixel) {
        << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << ' '
        << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << '\n';
 }
+class Image {
+public:
+    virtual int setPixel(int x, int y, Color color) = 0;
+    virtual void writeImage(std::ostream& os) = 0;
+};
 
-void writePPM(std::ostream& os, Color* img, int imageHeight, int imageWidth) {
-    os << "P3\n"
-       << imageWidth << ' ' << imageHeight << "\n255\n";
-
-    for (int j = imageHeight - 1; j >= 0; --j) {
-        for (int i = 0; i < imageWidth; ++i) {
-            // Color px_color(double(i)/(image_width-1), double(j)/(image_height-1), 0.25);
-            //std::cout << "("<<i<<","<<j<<")\n";// << img[imageWidth*j+i] << std::endl;
-            // writeColor(os, img[imageWidth*j+i]);
-        }
-    }
-}
-
-class PPMImage {
+class PPMImage : Image {
 public:
     PPMImage(int imageWidth, int imageHeight) : width(imageWidth), height(imageHeight) {
         image = new int[imageWidth*imageHeight];
     }
-    ~PPMImage() {
+    virtual ~PPMImage() {
         delete[] image;
     }
 
-    int setPixel(int x, int y, Color color) {
+    int setPixel(int x, int y, Color color) override {
         // auto scale = 1.0 / samplesPerPixel;
         if (color.r>1.0 || color.g>1.0 || color.b>1.0) {
             std::cerr << "Overflow: " << color << std::endl;
@@ -76,7 +68,7 @@ public:
         return 0;
     }
 
-    void writeImage(std::ostream& os) {
+    void writeImage(std::ostream& os) override {
         int px, r, g, b;
         os << "P3\n"
            << width << ' ' << height << "\n255\n";
@@ -94,8 +86,9 @@ public:
         }
     }
 
+public:
+    const int width;
+    const int height;
 private:
-    int width;
-    int height;
     int* image;
 };
