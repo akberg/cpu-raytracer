@@ -2,19 +2,52 @@
 BasedOnStyle: webkit
 IndentWidth: 4
 ---
+# Supported languages: Cpp, CSharp, Java, JavaScript, Json, ObjC, Proto, TableGen, TextProto, Verilog
 Language: Cpp
+# AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignArrayOfStructs: Left
 AlignConsecutiveAssignments:
     Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: true
+AlignConsecutiveDeclarations:
+    Enabled: false
+    AcrossComments: true
     AcrossEmptyLines: true
-    AcrossComments: false
+    AlignCompound: true
+AlignOperands: AlignAfterOperator
+AlignTrailingComments:
+    Kind: Always
+    OverEmptyLines: 0
+AllowAllArgumentsOnNextLine: false
+AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: true
-# webkit default: never
-AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: WithoutElse # Never
+AllowShortLambdasOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: true
+BinPackArguments: false
+BinPackParameters: false # true
+BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
-PackConstructorInitializers: CurrentLine
 BraceWrapping:
+    # AfterCaseLabel: false
+    # AfterClass: false
     # Following Rust style would be: false
-    AfterFunction: true
+    AfterFunction: false
     SplitEmptyFunction: false
     SplitEmptyRecord: false
-ColumnLimit: 90
+ColumnLimit: 100
+# Incompatible with bin-packing:
+InsertTrailingCommas: Wrapped
+IntegerLiteralSeparator:
+    # 0: leave as is, -1: remove
+    Binary: 0
+    Decimal: 3
+    DecimalMinDigits: 6
+    Hex: 0
+NamespaceIndentation: None
+PackConstructorInitializers: CurrentLine
+SortIncludes: CaseInsensitive
