@@ -1,7 +1,8 @@
 sources += files(
+    'camera.cpp',
     'main.cpp',
+    'material.cpp',
     'ray.cpp',
-    'shape/sphere.cpp',
     'shape/plane.cpp',
-    'material.cpp'
+    'shape/sphere.cpp',
 )
