@@ -9,7 +9,7 @@ public:
     virtual ~Plane() = default;
     virtual bool hit(const Ray& ray, double tMin, double tMax, HitRecord& rec)
         const override;
-    virtual Point origo() const override { return center; }
+    // virtual Point origo() const override { return center; }
 
 public:
     Point center;

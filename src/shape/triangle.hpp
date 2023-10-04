@@ -49,9 +49,9 @@ public:
         rec.mat = mat;
         return true;
     }
-    virtual Point origo() const override { return centroid; }
+    // virtual Point origo() const override { return centroid; }
 
-private:
+public:
     Point vertices[3];
     Point centroid;
     shared_ptr<Material> mat;

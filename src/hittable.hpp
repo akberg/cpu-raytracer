@@ -33,5 +33,5 @@ class Hittable {
 public:
     virtual bool
     hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const = 0;
-    virtual Point origo() const                                       = 0;
+    // virtual Point origo() const                                       = 0;
 };
