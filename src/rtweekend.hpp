@@ -34,6 +34,8 @@ const double near_zero = 1e-8;
 
 inline double degreesToRadians(double degrees) { return degrees * pi / 180.0; }
 
+inline int randomInt(int min, int max) { return min + rand() % (max - min); }
+
 // `double` utilities
 
 /// @brief Return a random float in the [0, 1)
