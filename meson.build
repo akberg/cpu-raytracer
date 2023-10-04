@@ -7,7 +7,7 @@ project('rt-cpu',
     ],
 )
 
-cpp = meson.get_compiler('cpp')
+# cpp = meson.get_compiler('cpp')
 
 sources = []
 
@@ -16,7 +16,10 @@ subdir('src')
 executable('rt-cpu',
     sources,
     include_directories: [
-        'src'
+        'src',
+        'include'
     ],
+    cpp_args: ['-fopenmp'],
+    link_args: ['-fopenmp'],
     install: false,
 )
