@@ -93,11 +93,16 @@ public:
                     auto v = (j + randomDouble()) / (img.height - 1);
                     auto r = getRay(i, j);
                     pxColor += rayColor(r, world, maxDepth);
-                    if (j % 40 == 0 && i % 20 == 0 && !s)
-                        std::cerr << "(" << i << "," << j << ")" << r << " : "
-                                  << pxColor << std::endl;
+                    // if (j % 40 == 0 && i % 20 == 0 && !s)
+                    //     std::cerr << "(" << i << "," << j << ")" << r << " :
+                    //     "
+                    //               << pxColor << std::endl;
                 }
                 img.setPixel(i, j, pxColor * sampleCoefficient);
+            }
+            if (j % (img.height / 10) == 0) {
+                std::cerr << "Ray tracing progress: "
+                          << j * 10 / (img.height / 10) << "%\n";
             }
         }
     }
@@ -143,7 +148,6 @@ private:
         u = glm::normalize(glm::cross(vup, w));
         v = glm::cross(w, u);
 
-
         // Determine viewport dimensions
         auto focalLength    = 1.0;
         auto theta          = degreesToRadians(vfov);
@@ -169,9 +173,10 @@ private:
                           - uViewport / 2.0 - vViewport / 2.0;
         pixel00Loc = viewportLowerLeft + 0.5 * (uPixelDelta + vPixelDelta);
         std::cerr << "Pixel (0,0) location: " << pixel00Loc
-                  << "\nuViewport: " << uViewport << " uPixelDelta: " << uPixelDelta
-                  << "\nvViewport: " << vViewport << " vPixelDelta: " << vPixelDelta
-                  << "\n";
+                  << "\nuViewport: " << uViewport
+                  << " uPixelDelta: " << uPixelDelta
+                  << "\nvViewport: " << vViewport
+                  << " vPixelDelta: " << vPixelDelta << "\n";
     }
 
     Point viewportLowerLeft;
