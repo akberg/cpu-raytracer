@@ -1,3 +1,4 @@
+#include "acceleration/bvh.hpp"
 #include "camera.hpp"
 #include "hittableList.hpp"
 #include "image.hpp"
@@ -110,27 +111,33 @@ std::vector<shared_ptr<Triangle>> triangles(int count) {
 }
 
 int main(int argc, char* argv[]) {
-    Point p(0.0, 5.0, 3.0);
-    Point q(1.0, 2.0, 2.0);
-    std::cerr << glm::min(p, q) << "\n";
     for (int i = 1; i < argc; i++) {
         std::cerr << "Unexpected argument: " << argv[i] << std::endl;
     }
+    TaskTimer tt;
+    std::ofstream f;
+    HittableList world;
 
     // New render
     Camera2 cam2;
-    cam2.imageWidth      = 600;
+    cam2.imageWidth      = 400;
     cam2.aspectRatio     = 16.0 / 9.0;
-    cam2.samplesPerPixel = 50;
+    cam2.samplesPerPixel = 150;
     cam2.lookAt          = Point(0.0, 0.0, -1.0);
     cam2.lookFrom        = Point(-0.6, 0.5, 0.9);
 
-    HittableList world;
-
-    //
-    // world = spheresAndTris();
+    // Sheres - - -
+    // world = spheres();
     // cam2.lookAt          = Point(0.0, 0.0, -1.0);
     // cam2.lookFrom        = Point(-1.0, 1.0, 0.9);
+
+    // tt.start("Running spheres ray tracing\n");
+    // cam2.render(world);
+    // tt.stop();
+    // f.open("runtime/spheres.ppm");
+    // if (!f.is_open()) std::cerr << "Failed to open file\n";
+    // cam2.img.writeImage(f);
+    // f.close();
 
     // Triangles - - -
     cam2.lookAt   = Point(0.0, 0.0, -1.0);
@@ -139,16 +146,36 @@ int main(int argc, char* argv[]) {
     for (auto tri : tris) {
         world.add(tri);
     }
-
-    TaskTimer tt;
+    tt.start("Build BVH . . . ");
+    BVH worldBVH(tris);
+    tt.stop();
+    std::cerr << worldBVH.tree(0);
+    // goto bvh;
     tt.start("Running ray tracing\n");
+    triIntersections  = 0;
+    aabbIntersections = 0;
     cam2.render(world);
     tt.stop();
-    std::ofstream f;
-    f.open("runtime/triangles.ppm");
+    std::cerr << "Intersections: " << triIntersections + aabbIntersections
+              << " (tri: " << triIntersections
+              << ", aabb: " << aabbIntersections << ")";
+    f.open("runtime/trianglesNaive.ppm");
     if (!f.is_open()) std::cerr << "Failed to open file\n";
     cam2.img.writeImage(f);
     f.close();
 
-    // img.writeImage(std::cout);
+bvh:
+    // cam2.imageWidth = 100;
+    tt.start("Running BVH ray tracing\n");
+    triIntersections  = 0;
+    aabbIntersections = 0;
+    cam2.render(worldBVH);
+    tt.stop();
+    std::cerr << "Intersections: " << triIntersections + aabbIntersections
+              << " (tri: " << triIntersections
+              << ", aabb: " << aabbIntersections << ")";
+    f.open("runtime/trianglesBVH.ppm");
+    if (!f.is_open()) std::cerr << "Failed to open file\n";
+    cam2.img.writeImage(f);
+    f.close();
 }
