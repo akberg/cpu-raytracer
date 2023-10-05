@@ -7,6 +7,9 @@
 
 #include <ostream>
 
+uint64_t triIntersections = 0;
+uint64_t aabbIntersections = 0;
+
 std::ostream& operator<<(std::ostream& os, const Ray& ray)
 {
     os << "Ray(origin: " << ray.origin << ", direction: " << ray.direction << ")";

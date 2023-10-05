@@ -31,6 +31,9 @@ public:
     Vec3 direction = Vec3(1, 0, 0);
 };
 
+extern uint64_t triIntersections;
+extern uint64_t aabbIntersections;
+
 struct Hittable;
 
 Color bgRayColor(const Ray& r);
