@@ -18,6 +18,7 @@ public:
     /// @return
     virtual bool
     hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const override {
+        triIntersections++; // Counting total no. of intersections.
         const double epsilon = 0.0001;
 
         const auto edge1 = vertices[1] - vertices[0];
