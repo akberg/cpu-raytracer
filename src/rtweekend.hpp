@@ -28,7 +28,7 @@ using std::shared_ptr;
 
 const double infinity  = std::numeric_limits<double>::infinity();
 const double pi        = 3.1415926535897932385;
-const double near_zero = 1e-8;
+const double nearZero = 1e-8;
 
 // Utility functions
 
@@ -72,7 +72,7 @@ inline Vec3 randomUnitVector() { return glm::normalize(randomInUnitSphere()); }
 /// @param v
 /// @return
 inline bool vec3NearZero(const Vec3& v) {
-    const double s = near_zero;
+    const double s = nearZero;
     return (fabs(v.x) < s) && (fabs(v.y) < s) && (fabs(v.z) < s);
 }
 
