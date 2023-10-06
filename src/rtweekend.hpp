@@ -76,6 +76,14 @@ inline bool vec3NearZero(const Vec3& v) {
     return (fabs(v.x) < s) && (fabs(v.y) < s) && (fabs(v.z) < s);
 }
 
+inline Vec3 randomInUnitDisk() {
+    for(;;) {
+        auto p = Vec3(randomDouble(-1.0, 1.0), randomDouble(-1.0, 1.0), 0.0);
+        if (glm::dot(p, p) < 1.0)
+            return p;
+    }
+}
+
 // Vec3 ray utilities
 
 inline Vec3 reflect(const Vec3& v, const Vec3& n) { return v - 2 * glm::dot(v, n) * n; }
