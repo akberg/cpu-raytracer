@@ -7,7 +7,7 @@
 
 class Triangle : public Hittable {
 public:
-    Triangle(Point v0, Point v1, Point v2, shared_ptr<Material> m) : mat(m) {
+    Triangle(Vec3 v0, Vec3 v1, Vec3 v2, shared_ptr<Material> m) : mat(m) {
         vertices[0] = v0;
         vertices[1] = v1;
         vertices[2] = v2;
@@ -53,7 +53,7 @@ public:
     // virtual Point origo() const override { return centroid; }
 
 public:
-    Point vertices[3];
-    Point centroid;
+    Vec3 vertices[3];
+    Vec3 centroid;
     shared_ptr<Material> mat;
 };
