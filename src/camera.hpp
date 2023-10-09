@@ -4,7 +4,6 @@
 /// The Camera class implements the perspective viewpoint from which the scene
 /// is rendered.
 
-#include "color.hpp"
 #include "hittable.hpp"
 #include "image.hpp"
 #include "ray.hpp"

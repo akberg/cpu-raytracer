@@ -1,7 +1,5 @@
 #pragma once
 
-#include "color.hpp"
-
 #include <iostream>
 #include <vector>
 
