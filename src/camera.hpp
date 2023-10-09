@@ -61,18 +61,20 @@ private:
     void initialize();
 };
 
-// Old Camera works, Camera2 is the problem
 class Camera2 {
 public:
-    double aspectRatio  = 1.0;
-    int imageWidth      = 100;
+    PPMImage img;
+    // Quality and Performance - - -
     int samplesPerPixel = 10;
     int maxDepth        = 10;
-    PPMImage img;
+    int imageWidth      = 100;
 
+    // Image settings - - -
+    double aspectRatio = 1.0;
     /// @brief Vertical FoV angle
-    double vfov = 90;
+    double vfov        = 90;
 
+    // Camera settings - - -
     Point lookFrom = Vec3(0.0, 0.0, 1.0); ///< Point camera is looking from
     Point lookAt   = Vec3(0.0, 0.0, 0.0); ///< Point camera is looking at
     Vec3 vup       = Vec3(0.0, 1.0, 0.0); ///< Camera relative Up
@@ -109,24 +111,19 @@ public:
 
     /// @brief Get a ray for pixel (u,v), randomly sampled within the square
     /// covered by the pixel.
-    Ray getRay(double u, double v) const {
+    /// @param u Horizontal position
+    /// @param v Vertical position
+    /// @param exact Set true to return exact direction instead of sampling within pixel square
+    Ray getRay(double u, double v, bool exact = false) const {
         auto pixelCenter = pixel00Loc + (u * uPixelDelta) + (v * vPixelDelta);
-        auto pixelSample = pixelCenter + pixelSampleSquare();
-        // Here, add defocus to ray origin
-        return Ray(origin, pixelSample - origin);
-    }
-
-    /// @brief Returns a random point in the square surrounding a pixel at the
-    /// origin.
-    Vec3 pixelSampleSquare() const {
-        auto px = -0.5 + randomDouble();
-        auto py = -0.5 + randomDouble();
-        return (px * uPixelDelta) + (py * vPixelDelta);
+        auto pixelSample =
+            pixelCenter + (exact ? Vec3(0.0) : pixelSampleSquare());
+        auto rOrigin = (defocusAngle <= 0) ? origin : defocusDiskSample();
+        return Ray(rOrigin, pixelSample - rOrigin);
     }
 
 private:
     void initialize() {
-
         imageHeight = static_cast<int>(imageWidth / aspectRatio);
         imageHeight = (imageHeight < 1) ? 1 : imageHeight;
 
@@ -149,10 +146,10 @@ private:
         v = glm::cross(w, u);
 
         // Determine viewport dimensions
-        auto focalLength    = 1.0;
+        // // auto focalLength    = 1.0;
         auto theta          = degreesToRadians(vfov);
         auto h              = tan(theta / 2);
-        auto viewportHeight = 2 * h * focalLength;
+        auto viewportHeight = 2 * h * focusDist;
         auto viewportWidth =
             viewportHeight * (static_cast<double>(imageWidth) / imageHeight);
 
@@ -169,22 +166,48 @@ private:
         // Calculate the location of the upper left pixel.
         // sub focalLength, looking towards negative Z.
         // Place location in the middle of the pixel's covered area.
-        viewportLowerLeft = origin - Vec3(0.0, 0.0, focalLength)
-                          - uViewport / 2.0 - vViewport / 2.0;
+        viewportLowerLeft =
+            origin - (focusDist * w) - uViewport / 2.0 - vViewport / 2.0;
         pixel00Loc = viewportLowerLeft + 0.5 * (uPixelDelta + vPixelDelta);
+
+        // Calculate camera defocus disk basis vectors.
+        auto defocusRadius =
+            focusDist * glm::tan(degreesToRadians(defocusAngle / 2.0));
+        defocusDisk_u = u * defocusRadius;
+        defocusDisk_v = v * defocusRadius;
+
         std::cerr << "Pixel (0,0) location: " << pixel00Loc
                   << "\nuViewport: " << uViewport
                   << " uPixelDelta: " << uPixelDelta
                   << "\nvViewport: " << vViewport
-                  << " vPixelDelta: " << vPixelDelta << "\n";
+                  << " vPixelDelta: " << vPixelDelta
+                  << "\nu defocus disk: " << defocusDisk_u
+                  << " v defocus disk: " << defocusDisk_v
+                  << "\ndefocus radius: " << defocusRadius << "\n";
     }
 
-    Point viewportLowerLeft;
+    /// @brief Returns a random point in the square surrounding a pixel at the
+    /// origin.
+    Vec3 pixelSampleSquare() const {
+        auto px = -0.5 + randomDouble();
+        auto py = -0.5 + randomDouble();
+        return (px * uPixelDelta) + (py * vPixelDelta);
+    }
+
+    /// @brief Return a point offsetting ray origin within a unit disk.
+    Vec3 defocusDiskSample() const {
+        auto p = randomInUnitDisk();
+        return origin + (p.x * defocusDisk_u) + (p.y + defocusDisk_v);
+    }
+
+    Vec3 viewportLowerLeft;
     /// @brief Image height (in pixels?)
     int imageHeight = static_cast<int>(imageWidth / aspectRatio);
-    Point origin;     ///< Camera origin position
+    Vec3 origin;     ///< Camera origin position
     Vec3 uPixelDelta; ///< Offset to pixel in horizontal direction
     Vec3 vPixelDelta; ///< Offset to pixel in vertical direction
-    Point pixel00Loc; ///< Location of upper left pixel
+    Vec3 pixel00Loc; ///< Location of upper left pixel
     Vec3 u, v, w;     ///< Camera frame basis vectors
+    Vec3 defocusDisk_u; ///< Defocus disk horizontal basis vector
+    Vec3 defocusDisk_v; ///< Defocus disk vertical basis vector
 };
