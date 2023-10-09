@@ -10,8 +10,9 @@
 
 // Types
 
-using Point = glm::dvec3;
+using Point = glm::dvec3; // Let's deprecate Point. It's always used together with Vec3
 using Vec3  = glm::dvec3;
+using Vec2  = glm::dvec2;
 using Color = glm::dvec3;
 
 [[maybe_unused]] static std::ostream& operator<<(std::ostream& os, const Point& p) {
