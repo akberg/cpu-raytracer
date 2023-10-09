@@ -31,6 +31,15 @@ bool Sphere::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const
     Vec3 outwardNormal = (rec.p - center) / radius;
     rec.setFaceNormal(ray, outwardNormal);
     rec.mat = mat;
+    getSphereUV(outwardNormal, rec.u, rec.v);
 
     return true;
+}
+
+void Sphere::getSphereUV(const Vec3& p, double& u, double& v) const {
+    auto theta = std::acos(-p.y);
+    auto phi = std::atan2(-p.z, p.x) + pi;
+
+    u = phi / (2.0*pi);
+    v = theta / pi;
 }
