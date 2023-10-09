@@ -1,4 +1,5 @@
 sources += files(
+    'acceleration/bvh.cpp',
     'camera.cpp',
     'main.cpp',
     'material.cpp',
@@ -6,4 +7,5 @@ sources += files(
     'stb.cpp',
     'shape/plane.cpp',
     'shape/sphere.cpp',
+    'texture.cpp',
 )
