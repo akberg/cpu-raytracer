@@ -1,3 +1,5 @@
+/// @file shape/triangle.hpp
+/// Currently defines both Triangle as an independent primitive, and the combination Mesh and IndexedTriangle, an attempt at figuring out how complex meshes are better stored for ray tracing.
 #pragma once
 
 #include "hittable.hpp"

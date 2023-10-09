@@ -1,3 +1,5 @@
+/// @file shape/plane.hpp
+/// Implicit Shape: Infinite plane
 #include "hittable.hpp"
 #include "material.hpp"
 

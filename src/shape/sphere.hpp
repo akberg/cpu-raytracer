@@ -1,3 +1,5 @@
+/// @file shape/sphere.hpp
+/// Implicit Shape: Sphere
 #pragma once
 
 #include "hittable.hpp"
