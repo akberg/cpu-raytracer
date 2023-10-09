@@ -9,7 +9,10 @@ class Material;
 struct HitRecord {
     Point p     = Point(0, 0, 0);
     Vec3 normal = Vec3(1, 0, 0);
+    /// @brief Length of ray at intersection
     double t    = 0;
+    /// @brief Texture coordinates
+    double u = 0, v = 0;
 
     /// @brief Setting the front face when computing geometry, as opposed to
     /// computing it when colouring.
@@ -33,5 +36,6 @@ class Hittable {
 public:
     virtual bool
     hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const = 0;
-    // virtual Point origo() const                                       = 0;
+
+    // virtual Point centroid() const                                       = 0;
 };
