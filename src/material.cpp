@@ -1,12 +1,10 @@
-#include <glm/glm.hpp>
-
-#include "ray.hpp"
-#include "rtweekend.hpp"
-
 #include "material.hpp"
 
 bool Lambertian::scatter(
-    const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered // NOLINT
+    const Vec3& vIn,
+    const HitRecord& rec,
+    Color& attenuance,
+    Ray& scattered // NOLINT
 ) const {
     Vec3 scatterDirection = rec.normal + randomUnitVector();
 
@@ -19,21 +17,31 @@ bool Lambertian::scatter(
 }
 
 bool Metal::scatter(
-    const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered) const {
+    const Vec3& vIn,
+    const HitRecord& rec,
+    Color& attenuance,
+    Ray& scattered) const {
     Vec3 reflected = reflect(vIn, rec.normal);
     scattered      = Ray(rec.p, reflected + fuzz * randomInUnitSphere());
-    attenuance     = albedo;
+    attenuance     = albedo->value(rec.u, rec.v, rec.p);
     return (glm::dot(scattered.direction, rec.normal) > 0);
 }
 
 bool TwoSidedMaterial::scatter(
-    const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered) const {
-    return rec.frontFace ? materialFront->scatter(vIn, rec, attenuance, scattered)
-                         : materialBack->scatter(vIn, rec, attenuance, scattered);
+    const Vec3& vIn,
+    const HitRecord& rec,
+    Color& attenuance,
+    Ray& scattered) const {
+    return rec.frontFace
+             ? materialFront->scatter(vIn, rec, attenuance, scattered)
+             : materialBack->scatter(vIn, rec, attenuance, scattered);
 }
 
 bool Dielectric::scatter(
-    const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered) const {
+    const Vec3& vIn,
+    const HitRecord& rec,
+    Color& attenuance,
+    Ray& scattered) const {
     attenuance             = Color(1.0, 1.0, 1.0);
     double refractionRatio = rec.frontFace ? (1.0 / ir) : ir;
 
@@ -44,7 +52,8 @@ bool Dielectric::scatter(
     bool cannotRefract = refractionRatio * sin_theta > 1.0;
     Vec3 direction;
 
-    if (cannotRefract || reflectance(cos_theta, refractionRatio) > randomDouble())
+    if (cannotRefract
+        || reflectance(cos_theta, refractionRatio) > randomDouble())
         direction = reflect(unitDirection, rec.normal);
     else
         direction = refract(unitDirection, rec.normal, refractionRatio);

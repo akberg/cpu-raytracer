@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ray.hpp"
+#include "hittable.hpp" // HitRecord
+#include "ray.hpp"      // Ray
 #include "rtweekend.hpp"
-
-#include "hittable.hpp"
+#include "texture.hpp"
 
 // TODO: Add texture coordinates in some way
 
@@ -17,10 +17,14 @@
 class Material {
 public:
     virtual bool scatter(
-        const Vec3& vIn, const HitRecord& rec, Color& attenuance, Ray& scattered) const
-        = 0;
-    virtual ~Material() = default;
+        const Vec3& vIn,
+        const HitRecord& rec,
+        Color& attenuance,
+        Ray& scattered) const = 0;
+    virtual ~Material()       = default;
 };
+
+// ----------------------------------------------------------------------------/
 
 class Lambertian : public Material {
 public:
@@ -33,7 +37,10 @@ public:
     /// @param attenuance Color of material
     /// @param scattered Return scattered ray
     /// @return true if valid
-    bool scatter(const Vec3& vIn, const HitRecord& rec, Color& attenuance,
+    bool scatter(
+        const Vec3& vIn,
+        const HitRecord& rec,
+        Color& attenuance,
         Ray& scattered) const override;
 
 public:
@@ -42,8 +49,10 @@ public:
 
 class Metal : public Material {
 public:
-    Metal(const Color& a) : albedo(a) { }
-    Metal(const Color& a, double f) : albedo(a), fuzz(f < 1 ? f : 1) { }
+    Metal(shared_ptr<Texture> a, double f) : albedo(a), fuzz(f < 1 ? f : 1) { }
+    Metal(shared_ptr<Texture> a) : Metal(a, 0.0) { }
+    Metal(const Color& a, double f) : Metal(make_shared<SolidColorTexture>(a), f) { }
+    Metal(const Color& a) : Metal(make_shared<SolidColorTexture>(a)) { }
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
@@ -52,18 +61,20 @@ public:
     /// @param attenuance Color of material
     /// @param scattered Return scattered ray
     /// @return true if valid
-    bool scatter(const Vec3& vIn, const HitRecord& rec, Color& attenuance,
+    bool scatter(
+        const Vec3& vIn,
+        const HitRecord& rec,
+        Color& attenuance,
         Ray& scattered) const override;
 
     double getFuzz() const { return fuzz; }
-    double setFuzz(double f)
-    {
+    double setFuzz(double f) {
         fuzz = f < 1 ? f : 1;
         return fuzz;
     }
 
 public:
-    Color albedo;
+    shared_ptr<Texture> albedo;
 
 private:
     double fuzz = 0;
@@ -73,8 +84,7 @@ class TwoSidedMaterial : public Material {
 public:
     TwoSidedMaterial(shared_ptr<Material> mFront, shared_ptr<Material> mBack)
         : materialFront(mFront)
-        , materialBack(mBack)
-    { }
+        , materialBack(mBack) { }
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
@@ -83,7 +93,10 @@ public:
     /// @param attenuance Color of material
     /// @param scattered Return scattered ray
     /// @return true if valid
-    bool scatter(const Vec3& vIn, const HitRecord& rec, Color& attenuance,
+    bool scatter(
+        const Vec3& vIn,
+        const HitRecord& rec,
+        Color& attenuance,
         Ray& scattered) const override;
 
 public:
@@ -95,7 +108,10 @@ class Dielectric : public Material {
 public:
     Dielectric(double refractionIndex) : ir(refractionIndex) { }
 
-    virtual bool scatter(const Vec3& vIn, const HitRecord& rec, Color& attenuance,
+    virtual bool scatter(
+        const Vec3& vIn,
+        const HitRecord& rec,
+        Color& attenuance,
         Ray& scattered) const override;
 
 public:
@@ -103,8 +119,7 @@ public:
     double ir;
 
 private:
-    static double reflectance(double cosine, double refIdx)
-    {
+    static double reflectance(double cosine, double refIdx) {
         // Schlick's approximation for reflectance
         auto r0 = (1 - refIdx) / (1 + refIdx);
         r0      = r0 * r0;
