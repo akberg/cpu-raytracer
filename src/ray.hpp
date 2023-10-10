@@ -1,9 +1,11 @@
 #pragma once
 
 #include "rtweekend.hpp"
+#include "image.hpp"
 
 #include <glm/glm.hpp>
 
+#include <atomic>
 #include <ostream>
 
 /// @brief The Ray class. Direction is normalized on creation
@@ -31,8 +33,8 @@ public:
     Vec3 direction = Vec3(1, 0, 0);
 };
 
-extern uint64_t triIntersections;
-extern uint64_t aabbIntersections;
+extern std::atomic_uint64_t triIntersections;
+extern std::atomic_uint64_t aabbIntersections;
 
 struct Hittable;
 
