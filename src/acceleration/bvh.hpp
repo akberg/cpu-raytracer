@@ -13,9 +13,11 @@
 
 struct BVHNode {
     Aabb aabb;
-    size_t mLeftChildIdx; ///< Index
-    size_t firstPrimIdx;  ///< Index
-    size_t primCount;
+    size_t primCount; ///< For a leaf: primitive count, for an inner node: 0
+    union {
+        size_t mLeftChildIdx; ///< Index of left child node, for inner nodes
+        size_t firstPrimIdx;  ///< Index of first primitive, for leaf nodes
+    };
 
     bool isLeaf() const { return primCount > 0; }
     size_t left() const { return mLeftChildIdx; }
@@ -62,7 +64,7 @@ private:
 
 private:
     size_t rootNodeIdx = 0;
-    size_t nodesUsed   = 1;
+    size_t nodesUsed   = 2;
     std::vector<BVHNode> nodes;
     /// @brief Reference to list of primitives. Assume that this one can be
     /// shared among subsystems, as so should not be modified.

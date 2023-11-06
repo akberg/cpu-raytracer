@@ -3,6 +3,7 @@
 #include "hittableList.hpp"
 #include "image.hpp"
 #include "material.hpp"
+#include "modelTri.hpp"
 #include "ray.hpp"
 #include "rtweekend.hpp"
 #include "shape/plane.hpp"
@@ -316,10 +317,78 @@ void renderQuads() {
     f.close();
 }
 
+void renderTriangles(int nTris = 32) {
+    TaskTimer tt;
+    std::ofstream f;
+
+    // New render
+    Camera2 cam;
+    cam.imageWidth      = 400;
+    cam.aspectRatio     = 1.0;
+    cam.vfov            = 80;
+    cam.samplesPerPixel = 100;
+    cam.lookAt          = Vec3(0.0, 0.0, 0.0);
+    cam.lookFrom        = Vec3(0.0, 0.0, 9.0);
+    cam.vup             = Vec3(0.0, 1.0, 0.0);
+    cam.focusDist       = 1.5;
+    cam.defocusAngle    = 0.0;
+
+    auto tris = triangles(nTris);
+
+    BVH world(tris);
+
+    auto s = std::format("Render {} triangles . . .\n", nTris);
+    tt.start(s);
+    cam.render(world);
+    tt.stop();
+
+    std::string filename = std::format("runtime/triangles-{}pc.ppm", nTris);
+    f.open(filename);
+    if (!f.is_open()) std::cerr << "Failed to open file: " << filename << "\n";
+    cam.img.writeImage(f);
+    f.close();
+}
+
+void renderUnityMesh() {
+    TaskTimer tt;
+    std::ofstream f;
+
+    // New render
+    Camera2 cam;
+    cam.imageWidth      = 400;
+    cam.aspectRatio     = 1.0;
+    cam.vfov            = 80;
+    cam.samplesPerPixel = 100;
+    cam.lookAt          = Vec3(0.0, 0.0, 0.0);
+    cam.lookFrom        = Vec3(0.0, 0.0, 9.0);
+    cam.vup             = Vec3(0.0, 1.0, 0.0);
+    cam.focusDist       = 1.5;
+    cam.defocusAngle    = 0.0;
+
+    auto tris = loadTriFile("resources/unity.tri");
+
+    BVH world(tris);
+    tt.start("Render unity.tri mesh . . .\n");
+    cam.render(world);
+    tt.stop();
+
+    std::string filename = "runtime/unityMesh.ppm";
+    f.open(filename);
+    if (!f.is_open()) std::cerr << "Failed to open file: " << filename << "\n";
+    cam.img.writeImage(f);
+    f.close();
+}
+
 int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; i++) {
         std::cerr << "Unexpected argument: " << argv[i] << std::endl;
     }
+
+    std::cout << "A BVH node currently requires " << sizeof(BVHNode) << " bytes.\n";
     // renderEarth();
-    renderQuads();
+    // renderQuads(); // Best time 21645ms
+    // renderOneBox(); // Best time 7804ms
+    // renderUnityMesh();
+    renderTriangles(178); // 178 tris best time 8351ms
+    renderTriangles(512); // 512 tris best time 14183ms
 }

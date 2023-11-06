@@ -10,7 +10,7 @@ BVH::BVH(const std::vector<shared_ptr<Triangle>>& primitives)
     : primitives(primitives)
     , N(primitives.size()) {
     // Upper limit of tree size.
-    nodes.resize(N * 2 - 1);
+    nodes.resize(N * 2);
     // Populate index list
     primIndices.resize(N);
     for (size_t i = 0; i < N; i++) primIndices[i] = i;
@@ -20,7 +20,7 @@ BVH::BVH(const std::vector<shared_ptr<Triangle>>& primitives)
     root.firstPrimIdx  = 0;
     root.primCount     = N;
     updateNodeBounds(rootNodeIdx);
-    std::cerr << "Start recursive subdivide()\n";
+    // std::cerr << "Start recursive subdivide()\n";
     subdivide(rootNodeIdx);
 }
 
@@ -49,12 +49,13 @@ void BVH::updateNodeBounds(const size_t nodeIdx) {
     size_t first  = node.firstPrimIdx;
     for (size_t i = 0; i < node.primCount; i++) {
         auto leafPrimIdx = primIndices[first + i];
-        std::cerr << "updateNodeBounds(" << nodeIdx
-                  << "): primCount=" << node.primCount
-                  << " firstPrimIdx=" << node.firstPrimIdx << " i=" << i
-                  << " leafPrimIdx=" << leafPrimIdx
-                  << " primitives.size()=" << primitives.size() << "\n";
+        // std::cerr << "updateNodeBounds(" << nodeIdx
+        //           << "): primCount=" << node.primCount
+        //           << " firstPrimIdx=" << node.firstPrimIdx << " i=" << i
+        //           << " leafPrimIdx=" << leafPrimIdx
+        //           << " primitives.size()=" << primitives.size() << "\n";
         auto leafPrim = primitives[leafPrimIdx];
+        // std::cerr << leafPrim->vertices[0] << "\n";
 
         node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[0]);
         node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[1]);
@@ -73,15 +74,15 @@ void BVH::subdivide(const size_t nodeIdx) {
     int axis    = 0;
     if (extent.y > extent.x) axis = 1;
     if (extent.z > extent[axis]) axis = 2;
-    std::cerr << nodeIdx
-              << "// 1. Determine the axis and position of the split plane: "
-              << axis << "\n";
+    // std::cerr << nodeIdx
+    //           << "// 1. Determine the axis and position of the split plane: "
+    //           << axis << "\n";
     double splitPos = node.aabb.min[axis] + extent[axis] * 0.5;
 
     // 2. Split the group of primitives in two halves using the split plane.
-    std::cerr << nodeIdx
-              << "// 2. Split the group of primitives in two halves using "
-                 "the split plane.\n";
+    // std::cerr << nodeIdx
+    //           << "// 2. Split the group of primitives in two halves using "
+    //              "the split plane.\n";
     // Implementing partition
     int i = node.firstPrimIdx;
     int j = i + node.primCount - 1;
@@ -95,8 +96,7 @@ void BVH::subdivide(const size_t nodeIdx) {
     }
 
     // 3. Create child nodes for each half.
-    std::cerr << nodeIdx << "// 3. Create child nodes for each half.\n";
-    // 3. Create child nodes for each half.
+    // std::cerr << nodeIdx << "// 3. Create child nodes for each half.\n";
     // Theoretically, the split in the middle can yield an empty box on the
     // left or the right side.
     int leftCount = i - node.firstPrimIdx;
@@ -105,9 +105,10 @@ void BVH::subdivide(const size_t nodeIdx) {
     size_t leftChildIdx  = nodesUsed++;
     size_t rightChildIdx = nodesUsed++;
     // Right child index is implicit, handled by member getter functions.
+    size_t firstPrimIdx = node.firstPrimIdx;
     node.mLeftChildIdx   = leftChildIdx;
 
-    nodes[leftChildIdx].firstPrimIdx  = node.firstPrimIdx;
+    nodes[leftChildIdx].firstPrimIdx  = firstPrimIdx;
     nodes[leftChildIdx].primCount     = leftCount;
     nodes[rightChildIdx].firstPrimIdx = i;
     nodes[rightChildIdx].primCount    = node.primCount - leftCount;
@@ -117,10 +118,10 @@ void BVH::subdivide(const size_t nodeIdx) {
     updateNodeBounds(rightChildIdx);
 
     // 4. Recurse into each of the child nodes.
-    std::cerr << nodeIdx
-              << "// 4. Recurse into each of the child nodes: " << leftChildIdx
-              << " and " << rightChildIdx << " (nodes used=" << nodesUsed
-              << ")\n";
+    // std::cerr << nodeIdx
+    //           << "// 4. Recurse into each of the child nodes: " << leftChildIdx
+    //           << " and " << rightChildIdx << " (nodes used=" << nodesUsed
+    //           << ")\n";
     subdivide(leftChildIdx);
     subdivide(rightChildIdx);
 }
