@@ -11,6 +11,8 @@ std::atomic_uint64_t triIntersections = 0;
 std::atomic_uint64_t aabbIntersections = 0;
 shared_ptr<STBImage> rayHdri;
 RayBG rayBackground = RayBG::GRADIENT;
+Color rayBgColor = Color(1.0, 1.0, 1.0);
+Vec3 rayBgLightSource = Vec3(0.0, 0.0, -1.0);
 
 std::ostream& operator<<(std::ostream& os, const Ray& ray)
 {
@@ -33,7 +35,14 @@ Color bgRayColor(const Ray& r)
     //         return rayHdri->getPixel(u, v);
     //     }
     // }
-    // case RayBG::GRADIENT:
+    case RayBG::SINGLE_LIGHT: {
+        auto lightDir = glm::normalize(r.origin - rayBgLightSource);
+        auto t = std::clamp(glm::dot(lightDir, r.direction) + 1.0, 0.0, 1.0);
+        return t * rayBgColor;
+    }
+    case RayBG::CONSTANT:
+        return rayBgColor;
+    case RayBG::GRADIENT:
     default: {
         auto t              = 0.5 * (r.direction.y + 1.0);
         return (1.0 - t) * Color(1.0, 0.75, 0.8) + t * Color(0.2, 0.6, 1.0);

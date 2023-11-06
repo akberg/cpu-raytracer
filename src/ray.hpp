@@ -41,9 +41,11 @@ public:
     double tMax    = infinity;
 };
 
-enum class RayBG { GRADIENT, HDRI };
+enum class RayBG { GRADIENT, HDRI, CONSTANT, SINGLE_LIGHT };
 extern RayBG rayBackground;
 extern shared_ptr<STBImage> rayHdri;
+extern Color rayBgColor;
+extern Vec3 rayBgLightSource;
 
 extern std::atomic_uint64_t triIntersections;
 extern std::atomic_uint64_t aabbIntersections;
