@@ -12,7 +12,7 @@ bool Lambertian::scatter(
     if (vec3NearZero(scatterDirection)) scatterDirection = rec.normal;
 
     scattered  = Ray(rec.p, scatterDirection);
-    attenuance = albedo;
+    attenuance = albedo->value(rec.u, rec.v, rec.p);
     return true;
 }
 

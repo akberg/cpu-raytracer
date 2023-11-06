@@ -28,7 +28,8 @@ public:
 
 class Lambertian : public Material {
 public:
-    Lambertian(const Color& a) : albedo(a) { }
+    Lambertian(const Color& a) : albedo(make_shared<SolidColorTexture>(a)) { }
+    Lambertian(shared_ptr<Texture> a) : albedo(a) { }
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
@@ -44,14 +45,15 @@ public:
         Ray& scattered) const override;
 
 public:
-    Color albedo;
+    shared_ptr<Texture> albedo;
 };
 
 class Metal : public Material {
 public:
     Metal(shared_ptr<Texture> a, double f) : albedo(a), fuzz(f < 1 ? f : 1) { }
     Metal(shared_ptr<Texture> a) : Metal(a, 0.0) { }
-    Metal(const Color& a, double f) : Metal(make_shared<SolidColorTexture>(a), f) { }
+    Metal(const Color& a, double f)
+        : Metal(make_shared<SolidColorTexture>(a), f) { }
     Metal(const Color& a) : Metal(make_shared<SolidColorTexture>(a)) { }
 
     /// @brief Calculate scatter ray according to material properties
