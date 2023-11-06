@@ -22,6 +22,8 @@ Ray Camera::getRay(double u, double v) const
 
 void Camera::render(Hittable& world, PPMImage& img, int samplesPerPixel)
 {
+    triIntersections = 0;
+    aabbIntersections = 0;
     for (int j = 0; j < img.height; ++j) {
         // std::cerr << "Row " << j << " / " << image_height << std::endl;
         for (int i = 0; i < img.width; ++i) {
@@ -35,6 +37,9 @@ void Camera::render(Hittable& world, PPMImage& img, int samplesPerPixel)
             img.setPixel(i, j, pxColor * (1.0 / samplesPerPixel));
         }
     }
+    std::cerr << "Intersections: " << triIntersections + aabbIntersections
+              << " (tri: " << triIntersections
+              << ", aabb: " << aabbIntersections << ")";
 }
 
 void Camera::initialize()

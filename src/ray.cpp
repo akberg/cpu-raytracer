@@ -9,6 +9,8 @@
 
 uint64_t triIntersections = 0;
 uint64_t aabbIntersections = 0;
+shared_ptr<STBImage> rayHdri;
+RayBG rayBackground = RayBG::GRADIENT;
 
 std::ostream& operator<<(std::ostream& os, const Ray& ray)
 {
@@ -18,9 +20,25 @@ std::ostream& operator<<(std::ostream& os, const Ray& ray)
 
 Color bgRayColor(const Ray& r)
 {
-    Vec3 unit_direction = glm::normalize(r.direction);
-    auto t              = 0.5 * (unit_direction.y + 1.0);
-    return (1.0 - t) * Color(1.0, 0.75, 0.8) + t * Color(0.2, 0.6, 1.0);
+    switch (rayBackground) {
+    // case RayBG::HDRI: {
+    //     if (rayHdri->height()) {
+    //         Vec3 p = r.origin /
+    //         auto theta = std::acos(-r.direction.y);
+    //         auto phi   = std::atan2(-r.direction.z, r.direction.x) + pi;
+
+    //         auto u = static_cast<int>(phi / (2.0 * pi) * rayHdri->width());
+    //         auto v = static_cast<int>(1.0 - (theta / pi) * rayHdri->height());
+
+    //         return rayHdri->getPixel(u, v);
+    //     }
+    // }
+    // case RayBG::GRADIENT:
+    default: {
+        auto t              = 0.5 * (r.direction.y + 1.0);
+        return (1.0 - t) * Color(1.0, 0.75, 0.8) + t * Color(0.2, 0.6, 1.0);
+    }
+    }
 }
 
 Color rayColor(const Ray& ray, const Hittable& world, int depth)
