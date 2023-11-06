@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-uint64_t triIntersections = 0;
-uint64_t aabbIntersections = 0;
+std::atomic_uint64_t triIntersections = 0;
+std::atomic_uint64_t aabbIntersections = 0;
 shared_ptr<STBImage> rayHdri;
 RayBG rayBackground = RayBG::GRADIENT;
 
