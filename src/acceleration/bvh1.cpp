@@ -1,12 +1,12 @@
 /// @file BVH implementation
-#include "bvh.hpp"
+#include "bvh1.hpp"
 
 #include "aabb.hpp"
 
 #include <iostream>
 #include <sstream>
 
-BVH::BVH(const std::vector<shared_ptr<Triangle>>& primitives)
+blikker_basic::BVH::BVH(const std::vector<shared_ptr<Triangle>>& primitives)
     : primitives(primitives)
     , N(primitives.size()) {
     // Upper limit of tree size.
@@ -24,7 +24,7 @@ BVH::BVH(const std::vector<shared_ptr<Triangle>>& primitives)
     subdivide(rootNodeIdx);
 }
 
-std::string BVH::tree(size_t nodeIdx, int depth) const {
+std::string blikker_basic::BVH::tree(size_t nodeIdx, int depth) const {
     const BVHNode& node = nodes[nodeIdx];
     int indent          = depth;
     std::stringstream os;
@@ -42,7 +42,7 @@ std::string BVH::tree(size_t nodeIdx, int depth) const {
     return os.str();
 }
 
-void BVH::updateNodeBounds(const size_t nodeIdx) {
+void blikker_basic::BVH::updateNodeBounds(const size_t nodeIdx) {
     BVHNode& node = nodes[nodeIdx];
     node.aabb.min = Vec3(1e30f);
     node.aabb.max = Vec3(-1e30f);
@@ -66,7 +66,7 @@ void BVH::updateNodeBounds(const size_t nodeIdx) {
     }
 }
 
-void BVH::subdivide(const size_t nodeIdx) {
+void blikker_basic::BVH::subdivide(const size_t nodeIdx) {
     BVHNode& node = nodes[nodeIdx];
     if (node.primCount <= 2) return;
     // 1. Determine the axis and position of the split plane.
@@ -126,7 +126,7 @@ void BVH::subdivide(const size_t nodeIdx) {
     subdivide(rightChildIdx);
 }
 
-bool BVH::intersect(
+bool blikker_basic::BVH::intersect(
     const size_t nodeIdx,
     const Ray& r,
     const double tMin,

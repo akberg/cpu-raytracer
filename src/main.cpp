@@ -1,4 +1,4 @@
-#include "acceleration/bvh.hpp"
+#include "acceleration/bvh1.hpp"
 #include "camera.hpp"
 #include "hittableList.hpp"
 #include "image.hpp"
@@ -16,6 +16,9 @@
 
 #include <fstream>
 #include <iostream>
+
+using blikker_basic::BVH;
+using blikker_basic::BVHNode;
 
 const int N_MATERIALS                       = 9;
 shared_ptr<Material> materials[N_MATERIALS] = {

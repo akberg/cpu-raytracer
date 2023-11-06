@@ -1,4 +1,4 @@
-/// @file bvh.hpp
+/// @file bvh1.hpp
 /// Implementing a BVH following Jacco's blog (jacco.ompf2.com).
 #pragma once
 
@@ -8,9 +8,9 @@
 #include "rtweekend.hpp"
 #include "shape/triangle.hpp"
 
-
 #include <vector>
 
+namespace blikker_basic {
 struct BVHNode {
     Aabb aabb;
     size_t primCount; ///< For a leaf: primitive count, for an inner node: 0
@@ -76,3 +76,4 @@ private:
     /// Primitives size
     size_t N;
 };
+} // namespace blikker_basic
