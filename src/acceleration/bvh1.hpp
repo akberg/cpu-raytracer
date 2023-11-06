@@ -1,5 +1,8 @@
 /// @file bvh1.hpp
 /// Implementing a BVH following Jacco's blog (jacco.ompf2.com).
+///
+/// Part 1 follows a very basic method, using a "midpoint split" object
+/// partitioning.
 #pragma once
 
 #include "aabb.hpp"
