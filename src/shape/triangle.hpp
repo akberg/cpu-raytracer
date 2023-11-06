@@ -52,10 +52,11 @@ public:
         rec.mat = mat;
         return true;
     }
-    // virtual Point origo() const override { return centroid; }
+
+    Vec3 centroid() const { return mCentroid; }
 
 public:
     Vec3 vertices[3];
-    Vec3 centroid;
+    Vec3 mCentroid;
     shared_ptr<Material> mat;
 };

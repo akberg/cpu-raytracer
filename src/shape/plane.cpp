@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-Plane::Plane(const Point& c, const Vec3& n, shared_ptr<Material> m)
+Plane::Plane(const Vec3& c, const Vec3& n, shared_ptr<Material> m)
     : center(c)
     , normal(n)
     , mat(m) { }

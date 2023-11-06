@@ -44,8 +44,8 @@ std::string BVH::tree(size_t nodeIdx, int depth) const {
 
 void BVH::updateNodeBounds(const size_t nodeIdx) {
     BVHNode& node = nodes[nodeIdx];
-    node.aabb.min = Point(1e30f);
-    node.aabb.max = Point(-1e30f);
+    node.aabb.min = Vec3(1e30f);
+    node.aabb.max = Vec3(-1e30f);
     size_t first  = node.firstPrimIdx;
     for (size_t i = 0; i < node.primCount; i++) {
         auto leafPrimIdx = primIndices[first + i];

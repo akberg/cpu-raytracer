@@ -8,9 +8,9 @@ Camera::Camera(double aspectRatio, double focalLength)
         auto viewportHeight = 2.0;
         auto viewportWidth  = aspectRatio * viewportHeight;
 
-        origin              = Point(0, 0, 0);
-        horizontal          = Point(viewportWidth, 0, 0);
-        vertical            = Point(0, viewportHeight, 0);
+        origin              = Vec3(0, 0, 0);
+        horizontal          = Vec3(viewportWidth, 0, 0);
+        vertical            = Vec3(0, viewportHeight, 0);
         lowerLeftCorner
             = origin - horizontal / 2.0 - vertical / 2.0 - Vec3(0, 0, focalLength);
     }

@@ -1,6 +1,6 @@
 #include "sphere.hpp"
 
-Sphere::Sphere(Point c, double r, shared_ptr<Material> m)
+Sphere::Sphere(Vec3 c, double r, shared_ptr<Material> m)
     : center(c)
     , radius(r)
     , mat(m) { }

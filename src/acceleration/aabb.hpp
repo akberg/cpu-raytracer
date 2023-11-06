@@ -4,8 +4,8 @@
 #include "ray.hpp"
 
 struct Aabb {
-    Point min;
-    Point max;
+    Vec3 min;
+    Vec3 max;
 
     bool intersect(const Ray& ray, const double tMin, const double tMax) const {
         aabbIntersections++; // Counting total no. of intersections.

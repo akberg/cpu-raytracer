@@ -23,7 +23,7 @@ public:
     /// @param aspect Aspect ratio
     void setAspectRatio(double aspect) {
         this->aspectRatio = aspect;
-        horizontal        = Point(aspect * vertical.y, 0, 0);
+        horizontal        = Vec3(aspect * vertical.y, 0, 0);
         lowerLeftCorner   = origin - horizontal / 2.0 - vertical / 2.0
                         - Vec3(0, 0, focalLength);
     }
@@ -37,7 +37,7 @@ public:
     void render(Hittable& world, PPMImage& img, int samplesPerPixel);
 
     /// @brief Origin of lens
-    Point origin;
+    Vec3 origin;
     /// @brief Focal Lenght affects the spreading angle of cast rays, and
     /// thereby the field of view. Lower focal length makes a wider angle, and
     /// a longer focal length makes a narrower angle.
@@ -47,9 +47,9 @@ public:
     int imageWidth     = 400;
 
 private:
-    Point horizontal;
-    Point vertical;
-    Point lowerLeftCorner;
+    Vec3 horizontal;
+    Vec3 vertical;
+    Vec3 lowerLeftCorner;
 
     /// @brief Get ray for the UV direction
     /// @param u Horizontal proportion, in [0, 1)
@@ -74,9 +74,9 @@ public:
     double vfov        = 90;
 
     // Camera settings - - -
-    Point lookFrom = Vec3(0.0, 0.0, 1.0); ///< Point camera is looking from
-    Point lookAt   = Vec3(0.0, 0.0, 0.0); ///< Point camera is looking at
-    Vec3 vup       = Vec3(0.0, 1.0, 0.0); ///< Camera relative Up
+    Vec3 lookFrom = Vec3(0.0, 0.0, 1.0); ///< Point camera is looking from
+    Vec3 lookAt   = Vec3(0.0, 0.0, 0.0); ///< Point camera is looking at
+    Vec3 vup      = Vec3(0.0, 1.0, 0.0); ///< Camera relative Up
 
     /// @brief Variation angle of rays through each pixel
     double defocusAngle = 0;
@@ -112,7 +112,8 @@ public:
     /// covered by the pixel.
     /// @param u Horizontal position
     /// @param v Vertical position
-    /// @param exact Set true to return exact direction instead of sampling within pixel square
+    /// @param exact Set true to return exact direction instead of sampling
+    /// within pixel square
     Ray getRay(double u, double v, bool exact = false) const {
         auto pixelCenter = pixel00Loc + (u * uPixelDelta) + (v * vPixelDelta);
         auto pixelSample =
@@ -202,11 +203,11 @@ private:
     Vec3 viewportLowerLeft;
     /// @brief Image height (in pixels?)
     int imageHeight = static_cast<int>(imageWidth / aspectRatio);
-    Vec3 origin;     ///< Camera origin position
-    Vec3 uPixelDelta; ///< Offset to pixel in horizontal direction
-    Vec3 vPixelDelta; ///< Offset to pixel in vertical direction
-    Vec3 pixel00Loc; ///< Location of upper left pixel
-    Vec3 u, v, w;     ///< Camera frame basis vectors
+    Vec3 origin;        ///< Camera origin position
+    Vec3 uPixelDelta;   ///< Offset to pixel in horizontal direction
+    Vec3 vPixelDelta;   ///< Offset to pixel in vertical direction
+    Vec3 pixel00Loc;    ///< Location of upper left pixel
+    Vec3 u, v, w;       ///< Camera frame basis vectors
     Vec3 defocusDisk_u; ///< Defocus disk horizontal basis vector
     Vec3 defocusDisk_v; ///< Defocus disk vertical basis vector
 };

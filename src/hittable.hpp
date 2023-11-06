@@ -7,7 +7,7 @@
 class Material;
 
 struct HitRecord {
-    Point p     = Point(0, 0, 0);
+    Vec3 p      = Vec3(0, 0, 0);
     Vec3 normal = Vec3(1, 0, 0);
     /// @brief Length of ray at intersection
     double t    = 0;
@@ -25,7 +25,7 @@ struct HitRecord {
     }
 
     HitRecord() { }
-    HitRecord(Point p, double t, const Ray& ray, const Vec3& outwardNormal)
+    HitRecord(Vec3 p, double t, const Ray& ray, const Vec3& outwardNormal)
         : p(p)
         , t(t) {
         setFaceNormal(ray, outwardNormal);
@@ -37,5 +37,5 @@ public:
     virtual bool
     hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const = 0;
 
-    // virtual Point centroid() const                                       = 0;
+    // virtual Vec3 centroid() const                                       = 0;
 };

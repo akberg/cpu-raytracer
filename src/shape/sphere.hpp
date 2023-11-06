@@ -10,17 +10,18 @@
 class Sphere : public Hittable {
 public:
     Sphere() { }
-    Sphere(Point c, double r, shared_ptr<Material> m);
+    Sphere(Vec3 c, double r, shared_ptr<Material> m);
     virtual ~Sphere() = default;
 
     void getSphereUV(const Vec3& p, double& u, double& v) const;
 
     virtual bool hit(
         const Ray& ray, double tMin, double tMax, HitRecord& rec) const override;
-    // virtual Point origo() const override { return center; }
+    // virtual Vec3 origo() const override { return center; }
 
 public:
-    Point center;
+    Vec3 center;
     double radius;
+    Vec3 rotation;
     shared_ptr<Material> mat;
 };

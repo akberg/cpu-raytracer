@@ -10,12 +10,14 @@
 
 // Types
 
-using Point = glm::dvec3; // Let's deprecate Point. It's always used together with Vec3
+/// Let's deprecate Point. It's always used together with Vec3
+using Point = glm::dvec3;
 using Vec3  = glm::dvec3;
 using Vec2  = glm::dvec2;
 using Color = glm::dvec3;
 
-[[maybe_unused]] static std::ostream& operator<<(std::ostream& os, const Point& p) {
+[[maybe_unused]] static std::ostream&
+operator<<(std::ostream& os, const Vec3& p) {
     os << "Vec3 { " << p.x << ", " << p.y << ", " << p.z << " }";
     return os;
 }
@@ -42,7 +44,9 @@ inline int randomInt(int min, int max) { return min + rand() % (max - min); }
 /// @brief Return a random float in the [0, 1)
 inline double randomDouble() { return rand() / (RAND_MAX + 1.0); }
 
-inline double randomDouble(double min, double max) { return min + (max - min) * randomDouble(); }
+inline double randomDouble(double min, double max) {
+    return min + (max - min) * randomDouble();
+}
 
 /// @brief Clamp a value `x` between `min` and `max`
 /// @return MIN(max, MAX(min, x))
@@ -54,7 +58,9 @@ inline double clamp(double x, double min, double max) {
 
 // `Vec3` utilities
 
-inline Vec3 randomVec3() { return Vec3(randomDouble(), randomDouble(), randomDouble()); }
+inline Vec3 randomVec3() {
+    return Vec3(randomDouble(), randomDouble(), randomDouble());
+}
 
 inline Vec3 randomVec3(double min, double max) {
     return Vec3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
