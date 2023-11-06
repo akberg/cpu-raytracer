@@ -1,5 +1,12 @@
 #pragma once
 
+#include "rtweekend.hpp"
+
+#include <stb_image.h>
+#include <stb_image_write.h>
+
+#include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
@@ -21,7 +28,7 @@ public:
 
     void resize(int imageWidth, int imageHeight) {
         image.resize(imageWidth * imageHeight);
-        width = imageWidth;
+        width  = imageWidth;
         height = imageHeight;
     }
 
@@ -52,8 +59,7 @@ public:
         return Color(
             static_cast<double>((c >> 24) & 0xff) / 256.0,
             static_cast<double>((c >> 16) & 0xff) / 256.0,
-            static_cast<double>((c >> 8) & 0xff) / 256.0
-        );
+            static_cast<double>((c >> 8) & 0xff) / 256.0);
     }
 
     void writeImage(std::ostream& os) override {
@@ -76,4 +82,64 @@ public:
 
 private:
     std::vector<int> image;
+};
+
+class STBImage {
+public:
+    STBImage() { }
+    STBImage(const std::string& filename) {
+        if (load(filename)) {
+            mFilename = filename;
+            return;
+        }
+        std::cerr << "File '" << filename << "` not found.\n";
+    }
+    ~STBImage() { stbi_image_free(data); }
+
+    bool load(const std::string& filename) {
+        data = stbi_load(
+            filename.c_str(),
+            &mWidth,
+            &mHeight,
+            &channels,
+            STBI_default);
+        std::cerr << "Loaded data with w=" << mWidth << " h=" << mHeight
+                  << " channels=" << channels << "\n";
+        scanlineSize = mWidth * channels;
+        return (bool)data;
+    }
+
+    bool store(const std::string& filename) {
+        // TODO
+    }
+
+    int width() const { return data ? mWidth : 0; }
+    int height() const { return data ? mHeight : 0; }
+    Color getPixel(int x, int y) const {
+        static Color magenta(1.0, 0.0, 1.0);
+
+        if (!data) return magenta;
+
+        x = std::clamp(x, 0, mWidth);
+        y = std::clamp(y, 0, mHeight);
+
+        double r =
+            static_cast<double>(data[y * scanlineSize + x * channels])
+            / 255.0;
+        double g =
+            static_cast<double>(data[y * scanlineSize + x * channels + 1])
+            / 255.0;
+        double b =
+            static_cast<double>(data[y * scanlineSize + x * channels + 2])
+            / 255.0;
+        double a = channels >= 4
+                     ? data[y * scanlineSize + x * channels + 2]
+                     : 1.0;
+        return Color(r, g, b);
+    }
+
+private:
+    uint8_t* data         = nullptr;
+    std::string mFilename = "";
+    int mWidth, mHeight, channels, scanlineSize;
 };
