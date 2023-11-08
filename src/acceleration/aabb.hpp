@@ -30,4 +30,16 @@ struct Aabb {
         //           << "\n";
         return tmax >= tmin && tmax > 0 && tmin < tMax; // && tmin < ray->t (?)
     }
+
+    /// @brief Grow AABB to fit new point `pt`.
+    void grow(Vec3 pt) {
+        min = glm::min(min, pt);
+        max = glm::max(max, pt);
+    }
+
+    /// @return Surface area of AABB
+    float area() const {
+        Vec3 e = max - min;
+        return e.x * e.y + e.y * e.z + e.z * e.x;
+    }
 };
