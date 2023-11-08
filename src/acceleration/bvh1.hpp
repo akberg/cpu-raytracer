@@ -43,6 +43,8 @@ public:
 
     std::string tree(size_t nodeIdx, int depth = 0) const;
 
+    size_t getNodesUsed() const { return nodesUsed; }
+
 private:
     /// @brief Update AABB bounds of root node.
     /// @param nodeIdx
