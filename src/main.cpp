@@ -1,4 +1,5 @@
 #include "acceleration/bvh1.hpp"
+#include "acceleration/bvh2.hpp"
 #include "camera.hpp"
 #include "hittableList.hpp"
 #include "image.hpp"
@@ -17,8 +18,8 @@
 #include <fstream>
 #include <iostream>
 
-using blikker_basic::BVH;
-using blikker_basic::BVHNode;
+using blikker_pt2::BVH;
+using blikker_pt2::BVHNode;
 
 const int N_MATERIALS                       = 9;
 shared_ptr<Material> materials[N_MATERIALS] = {
@@ -304,11 +305,31 @@ void renderQuads() {
     auto lowerTeal   = make_shared<Lambertian>(Color(0.2, 0.8, 0.8));
 
     HittableList world;
-    world.add(make_shared<Quad>(Vec3(-3, -2, 5), Vec3(0, 0, -4), Vec3(0, 4, 0), leftRed));
-    world.add(make_shared<Quad>(Vec3(-2, -2, 0), Vec3(4, 0, 0), Vec3(0, 4, 0), backGreen));
-    world.add(make_shared<Quad>(Vec3(3, -2, 1), Vec3(0, 0, 4), Vec3(0, 4, 0), rightBlue));
-    world.add(make_shared<Quad>(Vec3(-2, 3, 1), Vec3(4, 0, 0), Vec3(0, 0, 4), upperOrange));
-    world.add(make_shared<Quad>(Vec3(-2, -3, 5), Vec3(4, 0, 0), Vec3(0, 0, -4), lowerTeal));
+    world.add(make_shared<Quad>(
+        Vec3(-3, -2, 5),
+        Vec3(0, 0, -4),
+        Vec3(0, 4, 0),
+        leftRed));
+    world.add(make_shared<Quad>(
+        Vec3(-2, -2, 0),
+        Vec3(4, 0, 0),
+        Vec3(0, 4, 0),
+        backGreen));
+    world.add(make_shared<Quad>(
+        Vec3(3, -2, 1),
+        Vec3(0, 0, 4),
+        Vec3(0, 4, 0),
+        rightBlue));
+    world.add(make_shared<Quad>(
+        Vec3(-2, 3, 1),
+        Vec3(4, 0, 0),
+        Vec3(0, 0, 4),
+        upperOrange));
+    world.add(make_shared<Quad>(
+        Vec3(-2, -3, 5),
+        Vec3(4, 0, 0),
+        Vec3(0, 0, -4),
+        lowerTeal));
     tt.start("Render quads . . .\n");
     cam.render(world);
     tt.stop();
@@ -358,19 +379,27 @@ void renderUnityMesh() {
 
     // New render
     Camera2 cam;
-    cam.imageWidth      = 400;
+    cam.imageWidth      = 200;
     cam.aspectRatio     = 1.0;
     cam.vfov            = 80;
-    cam.samplesPerPixel = 100;
-    cam.lookAt          = Vec3(0.0, 0.0, 0.0);
-    cam.lookFrom        = Vec3(0.0, 0.0, 9.0);
+    cam.samplesPerPixel = 1;
+    cam.maxDepth        = 2; // default 10
+    cam.lookAt          = Vec3(-1.1, 0.0, 0.0);
+    cam.lookFrom        = Vec3(-1.3, 0.2, 2.4);
     cam.vup             = Vec3(0.0, 1.0, 0.0);
     cam.focusDist       = 1.5;
     cam.defocusAngle    = 0.0;
+    rayBackground       = RayBG::SINGLE_LIGHT;
+    rayBgColor          = Color(1.0, 1.0, 1.0);
+    rayBgLightSource    = cam.lookFrom;
 
     auto tris = loadTriFile("resources/unity.tri");
 
+    tt.start("Build BVH . . .\n");
     BVH world(tris);
+    tt.stop();
+    // std::cerr << world.tree(0) << "\n";
+    std::cerr << "Nodes used: " << world.getNodesUsed() << "\n";
     tt.start("Render unity.tri mesh . . .\n");
     cam.render(world);
     tt.stop();
@@ -387,11 +416,12 @@ int main(int argc, char* argv[]) {
         std::cerr << "Unexpected argument: " << argv[i] << std::endl;
     }
 
-    std::cout << "A BVH node currently requires " << sizeof(BVHNode) << " bytes.\n";
+    std::cout << "A BVH node currently requires " << sizeof(BVHNode)
+              << " bytes.\n";
     // renderEarth();
     // renderQuads(); // Best time 21645ms
     // renderOneBox(); // Best time 7804ms
-    // renderUnityMesh();
-    renderTriangles(178); // 178 tris best time 8351ms
-    renderTriangles(512); // 512 tris best time 14183ms
+    renderUnityMesh(); // 100 samples/14 depth Best time 93602ms
+    // renderTriangles(178); // 178 tris best time 8351ms
+    // renderTriangles(512); // 512 tris best time 14183ms
 }
