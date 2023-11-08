@@ -14,7 +14,7 @@ std::vector<shared_ptr<Triangle>>
 loadTriFile(std::string filename, size_t length = 0) {
     // Fallback material for now. This model loading might be integrated in
     // some mesh class.
-    auto fallbackMat = make_shared<Lambertian>(Color(1.0, 1.0, 1.0));
+    auto fallbackMat = make_shared<Lambertian>(Color(0.82, 0.82, 0.82));
 
     std::vector<shared_ptr<Triangle>> tris;
     // if (length > 0) tris.resize(length);
