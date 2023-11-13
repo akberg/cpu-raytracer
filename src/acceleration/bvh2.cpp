@@ -183,3 +183,65 @@ bool blikker_pt2::BVH::intersect(
     // std::cerr << "Node " << nodeIdx << ": " << anyHit;
     return anyHit;
 }
+
+bool blikker_pt2::BVH::intersectIterative(
+    const size_t nodeIdx,
+    const Ray& r,
+    const double tMin,
+    const double tMax,
+    HitRecord& rec) const {
+    const BVHNode* node = &nodes[rootNodeIdx];
+    const BVHNode* stack[64]; // Magic number stack size
+    uint32_t stackPtr = 0;
+
+    bool anyHit = false;
+    HitRecord tempRec;
+    auto closest = tMax;
+
+    for (;;) {
+        if (node->isLeaf()) {
+            // Intersect leaf node's primitives
+            for (size_t i = 0; i < node->primCount; i++) {
+                auto prim = primitives[primIndices[node->firstPrimIdx + i]];
+                if (prim->hit(r, tMin, closest, tempRec)) {
+                    anyHit = true;
+                    closest = tempRec.t;
+                    rec = tempRec;
+                    // if (!rec.mat)
+                    //     std::cerr << "Returned record with nullptr material: "<< prim <<"\n";
+                }
+            }
+            if (!stackPtr) {
+                // No more nodes to check, return current result
+                return anyHit;
+            } else {
+                node = stack[--stackPtr];
+            }
+
+            continue;
+        }
+
+        const BVHNode* child1 = &nodes[node->left()];
+        const BVHNode* child2 = &nodes[node->right()];
+        HitRecord dist1, dist2;
+        child1->aabb.hit(r, tMin, tMax, dist1);
+        child2->aabb.hit(r, tMin, tMax, dist2);
+        if (dist1.t > dist2.t) {
+            // Sort children by nearest
+            std::swap(dist1.t, dist2.t);
+            std::swap(child1, child2);
+        }
+        if (dist1.t == 1e30) {
+            if (!stackPtr) {
+                // No more nodes to check, return current result
+                return anyHit;
+            }
+            else node = stack[--stackPtr];
+        } else {
+            // Prepare child1
+            node = child1;
+            // Push child2 to stack for processing next
+            if (dist2.t != 1e30) stack[stackPtr++] = child2;
+        }
+    }
+}

@@ -39,7 +39,7 @@ public:
     // Hittable
     bool
     hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const override {
-        return intersect(rootNodeIdx, r, tMin, tMax, rec);
+        return intersectIterative(rootNodeIdx, r, tMin, tMax, rec);
     }
 
     std::string tree(size_t nodeIdx, int depth = 0) const;
@@ -67,6 +67,17 @@ private:
         const double tMax,
         HitRecord& rec,
         int depth = 0) const;
+
+    /// @brief Recursive intersection function called by hit(). First check if
+    /// AABB intersects ray, in which case either; For leaf nodes, compute hit
+    /// similarly to HittableList (exactly what this is); For inner nodes,
+    /// recurse and handle results.
+    bool intersectIterative(
+        const size_t nodeIdx,
+        const Ray& r,
+        const double tMin,
+        const double tMax,
+        HitRecord& rec) const;
 
     /// @brief Evaluate SAH for the node on the given split axis and position.
     /// @param axis Split axis
