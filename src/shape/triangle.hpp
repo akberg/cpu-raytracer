@@ -1,24 +1,30 @@
 /// @file shape/triangle.hpp
-/// Currently defines both Triangle as an independent primitive, and the combination Mesh and IndexedTriangle, an attempt at figuring out how complex meshes are better stored for ray tracing.
+/// Currently defines both Triangle as an independent primitive, and the
+/// combination Mesh and IndexedTriangle, an attempt at figuring out how complex
+/// meshes are better stored for ray tracing.
 #pragma once
 
 #include "hittable.hpp"
 #include "rtweekend.hpp"
 
 #include <glm/glm.hpp>
+#include <vector>
 
+/// @brief Triangle as implicit shape, containing all needed attributes to work
+/// on its own. Current size: 80 bytes (44 if using f32)
 class Triangle : public Hittable {
 public:
-    Triangle(Vec3 v0, Vec3 v1, Vec3 v2, shared_ptr<Material> m) : mat(m) {
+    Triangle(Vec3 v0, Vec3 v1, Vec3 v2, shared_ptr<Material> m)
+        : mat(m)
+        , mCentroid((v0 + v1 + v2) * 0.3333) {
         vertices[0] = v0;
         vertices[1] = v1;
         vertices[2] = v2;
-        centroid = (vertices[0] + vertices[1] + vertices[2]) * 0.3333;
     }
-    virtual ~Triangle() = default;
-    /// @brief Mõller-Trumbore riangle intersection. Assumes clockwise normal.
+
+    /// @brief Mõller-Trumbore triangle intersection. Assumes clockwise normal.
     /// @return
-    virtual bool
+    bool
     hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const override {
         triIntersections++; // Counting total no. of intersections.
         const double epsilon = 0.0001;
