@@ -22,6 +22,7 @@ public:
         Color& attenuance,
         Ray& scattered) const = 0;
     virtual ~Material()       = default;
+    virtual std::string name() const { return "Unnamed Material"; };
 };
 
 // ----------------------------------------------------------------------------/
@@ -30,6 +31,7 @@ class Lambertian : public Material {
 public:
     Lambertian(const Color& a) : albedo(make_shared<SolidColorTexture>(a)) { }
     Lambertian(shared_ptr<Texture> a) : albedo(a) { }
+    std::string name() const override { return "Lambertian"; }
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
@@ -43,7 +45,6 @@ public:
         const HitRecord& rec,
         Color& attenuance,
         Ray& scattered) const override;
-
 public:
     shared_ptr<Texture> albedo;
 };
@@ -55,6 +56,7 @@ public:
     Metal(const Color& a, double f)
         : Metal(make_shared<SolidColorTexture>(a), f) { }
     Metal(const Color& a) : Metal(make_shared<SolidColorTexture>(a)) { }
+    std::string name() const override { return "Metal"; }
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
@@ -87,6 +89,7 @@ public:
     TwoSidedMaterial(shared_ptr<Material> mFront, shared_ptr<Material> mBack)
         : materialFront(mFront)
         , materialBack(mBack) { }
+    std::string name() const override { return "TwoSided"; }
 
     /// @brief Calculate scatter ray according to material properties
     /// @param vIn Incoming ray
@@ -109,6 +112,7 @@ public:
 class Dielectric : public Material {
 public:
     Dielectric(double refractionIndex) : ir(refractionIndex) { }
+    std::string name() const override { return "Dielectric"; }
 
     virtual bool scatter(
         const Vec3& vIn,
