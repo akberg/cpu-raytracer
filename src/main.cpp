@@ -111,7 +111,7 @@ std::vector<shared_ptr<Triangle>> triangles(int count) {
             v0,
             v0 + v1,
             v0 + v2,
-            materials[randomInt(0, N_MATERIALS)]);
+            materials[0]); //[randomInt(0, N_MATERIALS)]);
     }
     return tris;
 }
@@ -359,7 +359,10 @@ void renderTriangles(int nTris = 32) {
 
     auto tris = triangles(nTris);
 
+    tt.start("Build BVH . . .\n");
     BVH world(tris);
+    tt.stop();
+    std::cerr << world.getNodesUsed() << " nodes used\n";
 
     auto s = std::format("Render {} triangles . . .\n", nTris);
     tt.start(s);
@@ -382,8 +385,8 @@ void renderUnityMesh() {
     cam.imageWidth      = 200;
     cam.aspectRatio     = 1.0;
     cam.vfov            = 80;
-    cam.samplesPerPixel = 1;
-    cam.maxDepth        = 2; // default 10
+    cam.samplesPerPixel = 2;
+    cam.maxDepth        = 3; // default 10
     cam.lookAt          = Vec3(-1.1, 0.0, 0.0);
     cam.lookFrom        = Vec3(-1.3, 0.2, 2.4);
     cam.vup             = Vec3(0.0, 1.0, 0.0);
