@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <ostream>
+#include <string>
 
 /// @brief The Ray class. Direction is normalized on creation
 class Ray {
@@ -22,8 +23,7 @@ public:
         , tMin(tMin)
         , tMax(tMax) {};
 
-    Ray(const Vec3& origin, const Vec3& direction)
-        : Ray(origin, direction, -infinity, infinity) {};
+    Ray(const Vec3& origin, const Vec3& direction) : Ray(origin, direction, -infinity, infinity) {};
 
     friend std::ostream& operator<<(std::ostream& os, const Ray& ray);
 
@@ -49,6 +49,8 @@ extern Vec3 rayBgLightSource;
 
 extern std::atomic_uint64_t triIntersections;
 extern std::atomic_uint64_t aabbIntersections;
+
+std::string logIntersections();
 
 struct Hittable;
 

@@ -100,12 +100,9 @@ std::vector<shared_ptr<Triangle>> triangles(int count) {
     double maxEdge = 0.5;
     for (int i = 0; i < count; i++) {
 
-        Vec3 v0 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5)
-                * maxPos * 2.0;
-        Vec3 v1 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5)
-                * maxEdge * 2.0;
-        Vec3 v2 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5)
-                * maxEdge * 2.0;
+        Vec3 v0 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5) * maxPos * 2.0;
+        Vec3 v1 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5) * maxEdge * 2.0;
+        Vec3 v2 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5) * maxEdge * 2.0;
 
         tris[i] = make_shared<Triangle>(
             v0,
@@ -250,18 +247,13 @@ void renderTwoSpheres() {
     cam.defocusAngle    = 0.0;
 
     // STBImage tex("resources/cgaxis_hdri_skies_01_52.jpg");
-    auto imgTex =
-        make_shared<ImageTexture>("resources/cgaxis_hdri_skies_01_52.jpg");
-    auto imgTexEarth = make_shared<ImageTexture>("resources/earthmap.jpg");
+    auto imgTex             = make_shared<ImageTexture>("resources/cgaxis_hdri_skies_01_52.jpg");
+    auto imgTexEarth        = make_shared<ImageTexture>("resources/earthmap.jpg");
     imgTex->repeatedTexture = 1.0;
 
-    auto checker =
-        make_shared<CheckerTexture>(0.025, Color(1.0), Color(0.0, 0.0, 1.0));
-    auto grad = make_shared<GradientTexture>(
-        Color(1.0, 0.0, 0.0),
-        Color(0.0, 0.0, 1.0),
-        true,
-        false);
+    auto checker = make_shared<CheckerTexture>(0.025, Color(1.0), Color(0.0, 0.0, 1.0));
+    auto grad =
+        make_shared<GradientTexture>(Color(1.0, 0.0, 0.0), Color(0.0, 0.0, 1.0), true, false);
     auto mat1 = make_shared<Metal>(checker, 0.1);
     // auto mat2 = make_shared<Metal>(Color(0.95, 0.95, 0.95), 0.6);
     auto mat2 = make_shared<Lambertian>(imgTexEarth);
@@ -305,31 +297,11 @@ void renderQuads() {
     auto lowerTeal   = make_shared<Lambertian>(Color(0.2, 0.8, 0.8));
 
     HittableList world;
-    world.add(make_shared<Quad>(
-        Vec3(-3, -2, 5),
-        Vec3(0, 0, -4),
-        Vec3(0, 4, 0),
-        leftRed));
-    world.add(make_shared<Quad>(
-        Vec3(-2, -2, 0),
-        Vec3(4, 0, 0),
-        Vec3(0, 4, 0),
-        backGreen));
-    world.add(make_shared<Quad>(
-        Vec3(3, -2, 1),
-        Vec3(0, 0, 4),
-        Vec3(0, 4, 0),
-        rightBlue));
-    world.add(make_shared<Quad>(
-        Vec3(-2, 3, 1),
-        Vec3(4, 0, 0),
-        Vec3(0, 0, 4),
-        upperOrange));
-    world.add(make_shared<Quad>(
-        Vec3(-2, -3, 5),
-        Vec3(4, 0, 0),
-        Vec3(0, 0, -4),
-        lowerTeal));
+    world.add(make_shared<Quad>(Vec3(-3, -2, 5), Vec3(0, 0, -4), Vec3(0, 4, 0), leftRed));
+    world.add(make_shared<Quad>(Vec3(-2, -2, 0), Vec3(4, 0, 0), Vec3(0, 4, 0), backGreen));
+    world.add(make_shared<Quad>(Vec3(3, -2, 1), Vec3(0, 0, 4), Vec3(0, 4, 0), rightBlue));
+    world.add(make_shared<Quad>(Vec3(-2, 3, 1), Vec3(4, 0, 0), Vec3(0, 0, 4), upperOrange));
+    world.add(make_shared<Quad>(Vec3(-2, -3, 5), Vec3(4, 0, 0), Vec3(0, 0, -4), lowerTeal));
     tt.start("Render quads . . .\n");
     cam.render(world);
     tt.stop();
@@ -419,7 +391,7 @@ void renderUnityMesh() {
     cam.render(world);
     tt.stop();
 
-    std::cerr << "Intersections: " << triIntersections + aabbIntersections << "(AABB: " << aabbIntersections << ", Tri: " << triIntersections << ")\n";
+    std::cerr << logIntersections();
 
     std::string filename = "runtime/unityMesh.ppm";
     f.open(filename);
@@ -433,8 +405,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Unexpected argument: " << argv[i] << std::endl;
     }
 
-    std::cout << "A BVH node currently requires " << sizeof(BVHNode)
-              << " bytes.\n";
+    std::cout << "A BVH node currently requires " << sizeof(BVHNode) << " bytes.\n";
     // renderEarth();
     // renderQuads(); // Best time 21645ms
     // renderOneBox(); // Best time 7804ms
