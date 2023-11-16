@@ -10,7 +10,7 @@ public:
     void stop() {
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now() - tStart);
-        std::cerr << elapsed << "\n";
+        std::cerr << elapsed.count() << "ms\n";
     }
     void stopRestart(std::string msg) {
         stop();
