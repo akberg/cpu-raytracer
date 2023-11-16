@@ -151,7 +151,7 @@ void renderOneBox() {
     std::ofstream f;
 
     // New render
-    Camera2 cam;
+    Camera cam;
     cam.imageWidth      = 300;
     cam.aspectRatio     = 16.0 / 9.0;
     cam.samplesPerPixel = 100;
@@ -177,7 +177,7 @@ void renderOneSphere() {
     std::ofstream f;
 
     // New render
-    Camera2 cam;
+    Camera cam;
     cam.imageWidth      = 300;
     cam.aspectRatio     = 16.0 / 9.0;
     cam.vfov            = 90;
@@ -206,7 +206,7 @@ void renderEarth(double hour = 0.0) {
     std::ofstream f;
 
     // New render
-    Camera2 cam;
+    Camera cam;
     cam.imageWidth      = 800;
     cam.aspectRatio     = 16.0 / 9.0;
     cam.vfov            = 90;
@@ -236,7 +236,7 @@ void renderTwoSpheres() {
     std::ofstream f;
 
     // New render
-    Camera2 cam;
+    Camera cam;
     cam.imageWidth      = 600;
     cam.aspectRatio     = 16.0 / 9.0;
     cam.vfov            = 80;
@@ -279,7 +279,7 @@ void renderQuads() {
     std::ofstream f;
 
     // New render
-    Camera2 cam;
+    Camera cam;
     cam.imageWidth      = 400;
     cam.aspectRatio     = 1.0;
     cam.vfov            = 80;
@@ -318,7 +318,7 @@ void renderTriangles(int nTris = 32) {
     std::ofstream f;
 
     // New render
-    Camera2 cam;
+    Camera cam;
     cam.imageWidth      = 400;
     cam.aspectRatio     = 1.0;
     cam.vfov            = 80;
@@ -365,7 +365,7 @@ void renderUnityMesh() {
     std::ofstream f;
 
     // New render
-    Camera2 cam;
+    Camera cam;
     cam.imageWidth      = 200;
     cam.aspectRatio     = 1.0;
     cam.vfov            = 80;
