@@ -369,8 +369,8 @@ void renderUnityMesh() {
     cam.imageWidth      = 200;
     cam.aspectRatio     = 1.0;
     cam.vfov            = 80;
-    cam.samplesPerPixel = 2;
-    cam.maxDepth        = 3; // default 10
+    cam.samplesPerPixel = 24;
+    cam.maxDepth        = 10; // default 10
     cam.lookAt          = Vec3(-1.1, 0.0, 0.0);
     cam.lookFrom        = Vec3(-1.3, 0.2, 2.4);
     cam.vup             = Vec3(0.0, 1.0, 0.0);
@@ -381,6 +381,11 @@ void renderUnityMesh() {
     rayBgLightSource    = cam.lookFrom;
 
     auto tris = loadTriFile("resources/unity.tri");
+    double yPlane = -1.3;
+    tris.push_back(make_shared<Triangle>(Vec3(1.0, yPlane, 1.0), Vec3(0.0, yPlane, 1.0), Vec3(0.0, yPlane, -1.0), matMetRed2));
+    tris.push_back(make_shared<Triangle>(Vec3(1.0, yPlane, 1.0), Vec3(0.0, yPlane, -1.0), Vec3(1.0, yPlane, -1.0), matMetRed2));
+    tris.push_back(make_shared<Triangle>(Vec3(0.0, yPlane, 2.0), Vec3(-4.0, yPlane, 2.0), Vec3(-4.0, yPlane, -2.0), matMetLight));
+    tris.push_back(make_shared<Triangle>(Vec3(0.0, yPlane, 2.0), Vec3(-4.0, yPlane, -2.0), Vec3(0.0, yPlane, -2.0), matMetLight));
 
     tt.start("Build BVH . . .\n");
     BVH world(tris);
@@ -391,13 +396,42 @@ void renderUnityMesh() {
     cam.render(world);
     tt.stop();
 
-    std::cerr << logIntersections();
+    std::cerr << logIntersections() << "\n";
 
     std::string filename = "runtime/unityMesh.ppm";
     f.open(filename);
     if (!f.is_open()) std::cerr << "Failed to open file: " << filename << "\n";
     cam.img.writeImage(f);
     f.close();
+
+    cam.lookFrom        = Vec3(-1.0, 0.2, 2.8);
+    rayBgLightSource    = cam.lookFrom;
+    tt.start("Render unity.tri mesh . . .\n");
+    cam.render(world);
+    tt.stop();
+
+    std::cerr << logIntersections() << "\n";
+
+    filename = "runtime/unityMesh1.ppm";
+    f.open(filename);
+    if (!f.is_open()) std::cerr << "Failed to open file: " << filename << "\n";
+    cam.img.writeImage(f);
+    f.close();
+
+    cam.lookFrom        = Vec3(-1.0, 2.0, 1.8);
+    rayBgLightSource    = cam.lookFrom;
+    tt.start("Render unity.tri mesh . . .\n");
+    cam.render(world);
+    tt.stop();
+
+    std::cerr << logIntersections() << "\n";
+
+    filename = "runtime/unityMesh2.ppm";
+    f.open(filename);
+    if (!f.is_open()) std::cerr << "Failed to open file: " << filename << "\n";
+    cam.img.writeImage(f);
+    f.close();
+
 }
 
 int main(int argc, char* argv[]) {
