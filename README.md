@@ -41,10 +41,9 @@ Project source code
 * `texture.hpp|cpp` - Interface `Texture`, and includes some texture implementations: Solid Colour, Checker.
 * `material.hpp|cpp` - Interface `Material`, and includes some material implementations.
 
-## BVHs
-
 Results using unity.tri and camera settings:
 ```
+// 1
     cam.imageWidth      = 200;
     cam.aspectRatio     = 1.0;
     cam.vfov            = 80;
@@ -56,11 +55,29 @@ Results using unity.tri and camera settings:
     cam.focusDist       = 1.5;
     cam.defocusAngle    = 0.0;
 ```
+```
+// 2
+    cam.imageWidth      = 200;
+    cam.aspectRatio     = 1.0;
+    cam.vfov            = 80;
+    cam.samplesPerPixel = 2;
+    cam.maxDepth        = 3; // default 10
+    cam.lookAt          = Vec3(-1.1, 0.0, 0.0);
+    cam.lookFrom        = Vec3(-1.3, 0.2, 2.4);
+    cam.vup             = Vec3(0.0, 1.0, 0.0);
+    cam.focusDist       = 1.5;
+    cam.defocusAngle    = 0.0;
+```
+Running on my MSI laptop Fedora 38 in performance mode.
 
 ### basic (blikker part 1)
 
-build: 31ms, nodes used: 10510, render: 249ms
+1: build: 31ms, nodes used: 10510, render: 249ms
 
 ### SAH (blikker part 2)
 
-build: 138638ms, nodes used: 24147, render: 119s
+1: build: 138638ms, nodes used: 24147, render: 119s -> More than double render speed, for an insane increase of build time.
+2 (32 bit): build: 134970ms, nodes used: 24479, render: 338ms
+  (64 bit): build: 130693ms, nodes used: 24147, render: 289ms
+
+It seems a 32-bit design causes more issues than benefits in this case (TBF, the guide is getting quite old, so this part might be a bit outdated).
