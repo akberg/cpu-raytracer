@@ -14,6 +14,7 @@ public:
         , uEdge(u)
         , vEdge(v)
         , mat(m) { }
+    virtual ~Quad() = default;
 
     bool hit(const Ray& ray, double tMin, double tMax, HitRecord& rec)
         const override {

@@ -110,7 +110,8 @@ public:
     }
 
     bool store(const std::string& filename) {
-        // TODO
+        // TODO: Implement
+        return false;
     }
 
     int width() const { return data ? mWidth : 0; }

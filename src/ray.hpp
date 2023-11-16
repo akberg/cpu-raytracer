@@ -52,7 +52,7 @@ extern std::atomic_uint64_t aabbIntersections;
 
 std::string logIntersections();
 
-struct Hittable;
+class Hittable;
 
 Color bgRayColor(const Ray& r);
 

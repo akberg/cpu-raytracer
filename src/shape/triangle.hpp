@@ -15,12 +15,13 @@
 class Triangle : public Hittable {
 public:
     Triangle(Vec3 v0, Vec3 v1, Vec3 v2, shared_ptr<Material> m)
-        : mat(m)
-        , mCentroid((v0 + v1 + v2) * 0.3333) {
+        : mCentroid((v0 + v1 + v2) * 0.3333)
+        , mat(m) {
         vertices[0] = v0;
         vertices[1] = v1;
         vertices[2] = v2;
     }
+    virtual ~Triangle() = default;
 
     /// @brief Mõller-Trumbore triangle intersection. Assumes clockwise normal.
     /// @return
