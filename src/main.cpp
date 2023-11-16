@@ -364,12 +364,24 @@ void renderTriangles(int nTris = 32) {
     tt.stop();
     std::cerr << world.getNodesUsed() << " nodes used\n";
 
-    auto s = std::format("Render {} triangles . . .\n", nTris);
+    // auto s = std::format("Render {} triangles . . .\n", nTris);
+    std::string s;
+    {
+        std::stringstream ss;
+        ss << "Render " << nTris << "triangles . . .\n";
+        s = ss.str();
+    }
     tt.start(s);
     cam.render(world);
     tt.stop();
 
-    std::string filename = std::format("runtime/triangles-{}pc.ppm", nTris);
+    // std::string filename = std::format("runtime/triangles-{}pc.ppm", nTris);
+    std::string filename;
+    {
+        std::stringstream ss;
+        ss << "runtime/triangles-" << nTris << "pc.ppm";
+        filename = ss.str();
+    }
     f.open(filename);
     if (!f.is_open()) std::cerr << "Failed to open file: " << filename << "\n";
     cam.img.writeImage(f);
@@ -406,6 +418,8 @@ void renderUnityMesh() {
     tt.start("Render unity.tri mesh . . .\n");
     cam.render(world);
     tt.stop();
+
+    std::cerr << "Intersections: " << triIntersections + aabbIntersections << "(AABB: " << aabbIntersections << ", Tri: " << triIntersections << ")\n";
 
     std::string filename = "runtime/unityMesh.ppm";
     f.open(filename);
