@@ -5,18 +5,19 @@
 #include <shape/triangle.hpp>
 
 #include <cstdio>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
 
-std::vector<shared_ptr<Triangle>>
-loadTriFile(std::string filename, size_t length = 0) {
+std::vector<shared_ptr<Primitive>>
+loadTriFile(std::string filename, size_t length = 0)
+{
     // Fallback material for now. This model loading might be integrated in
     // some mesh class.
     auto fallbackMat = make_shared<Lambertian>(Color(0.82, 0.82, 0.82));
 
-    std::vector<shared_ptr<Triangle>> tris;
+    std::vector<shared_ptr<Primitive>> tris;
     // if (length > 0) tris.resize(length);
     std::ifstream file(filename);
     std::string line;
@@ -27,8 +28,10 @@ loadTriFile(std::string filename, size_t length = 0) {
     // std::cerr << line;
 
     while (0 != line.compare("999 999 999 999 999 999 999 999 999")) {
+        // clang-format off
         sscanf(line.c_str(), "%f %f %f %f %f %f %f %f %f\n",
             &a, &b, &c, &d, &e, &f, &g, &h, &i );
+        // clang-format on
         auto v0 = Vec3(a, b, c);
         auto v1 = Vec3(d, e, f);
         auto v2 = Vec3(g, h, i);

@@ -1,4 +1,5 @@
 sources += files(
+    'acceleration/aabb.cpp',
     'acceleration/bvh1.cpp',
     'acceleration/bvh2.cpp',
     'camera.cpp',

@@ -12,7 +12,7 @@
 
 /// @brief Triangle as implicit shape, containing all needed attributes to work
 /// on its own. Current size: 80 bytes (44 if using f32)
-class Triangle : public Hittable {
+class Triangle : public Primitive {
 public:
     Triangle(Vec3 v0, Vec3 v1, Vec3 v2, shared_ptr<Material> m)
         : mCentroid((v0 + v1 + v2) * 0.3333)
@@ -59,9 +59,12 @@ public:
         rec.mat = mat;
         return true;
     }
-
-    Vec3 centroid() const { return mCentroid; }
-
+    Vec3 centroid() const override { return mCentroid; }
+    void growAABB(Aabb& aabb) const override {
+        aabb.grow(vertices[0]);
+        aabb.grow(vertices[1]);
+        aabb.grow(vertices[2]);
+    }
 public:
     Vec3 vertices[3];
     Vec3 mCentroid;

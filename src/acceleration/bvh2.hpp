@@ -10,6 +10,7 @@
 #include "hittable.hpp"
 // #include "hittableList.hpp"
 #include "rtweekend.hpp"
+#include "hittable.hpp"
 #include "shape/triangle.hpp"
 
 #include <vector>
@@ -34,7 +35,7 @@ public:
     /// this is the buildBVH() function.
     /// @param primitives List of primitive pointers, making the structure only
     /// for handling triangles in the first place.
-    BVH(const std::vector<shared_ptr<Triangle>>& primitives);
+    BVH(const std::vector<shared_ptr<Primitive>>& primitives);
 
     // Hittable
     bool
@@ -89,17 +90,19 @@ private:
         Aabb rightBox { .min = Vec3(1e30), .max = Vec3(-1e30) };
         int leftCount = 0, rightCount = 0;
         for (size_t i = 0; i < node.primCount; i++) {
-            auto tri = primitives[primIndices[node.firstPrimIdx + i]];
-            if (tri->centroid()[axis] < pos) {
+            auto prim = primitives[primIndices[node.firstPrimIdx + i]];
+            if (prim->centroid()[axis] < pos) {
                 leftCount++;
-                leftBox.grow(tri->vertices[0]);
-                leftBox.grow(tri->vertices[1]);
-                leftBox.grow(tri->vertices[2]);
+                prim->growAABB(leftBox);
+                // leftBox.grow(prim->vertices[0]);
+                // leftBox.grow(prim->vertices[1]);
+                // leftBox.grow(prim->vertices[2]);
             } else {
                 rightCount++;
-                rightBox.grow(tri->vertices[0]);
-                rightBox.grow(tri->vertices[1]);
-                rightBox.grow(tri->vertices[2]);
+                prim->growAABB(rightBox);
+                // rightBox.grow(prim->vertices[0]);
+                // rightBox.grow(prim->vertices[1]);
+                // rightBox.grow(prim->vertices[2]);
             }
         }
         // if (lc) *lc = leftCount;
@@ -116,7 +119,7 @@ private:
     std::vector<BVHNode> nodes;
     /// @brief Reference to list of primitives. Assume that this one can be
     /// shared among subsystems, as so should not be modified.
-    const std::vector<shared_ptr<Triangle>>& primitives;
+    const std::vector<shared_ptr<Primitive>>& primitives;
     /// @brief Order of indices into the primitives list. This also allows for
     /// the element size to be decreased (surely won't need 2^64 primitives, or
     /// even 2^32).

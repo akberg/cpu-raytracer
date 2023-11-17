@@ -6,7 +6,7 @@
 #include <iostream>
 #include <sstream>
 
-blikker_pt2::BVH::BVH(const std::vector<shared_ptr<Triangle>>& primitives)
+blikker_pt2::BVH::BVH(const std::vector<shared_ptr<Primitive>>& primitives)
     : primitives(primitives)
     , N(primitives.size()) {
     // Upper limit of tree size.
@@ -57,12 +57,13 @@ void blikker_pt2::BVH::updateNodeBounds(const size_t nodeIdx) {
         auto leafPrim    = primitives[leafPrimIdx];
         // std::cerr << leafPrim->vertices[0] << "\n";
 
-        node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[0]);
-        node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[1]);
-        node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[2]);
-        node.aabb.max = glm::max(node.aabb.max, leafPrim->vertices[0]);
-        node.aabb.max = glm::max(node.aabb.max, leafPrim->vertices[1]);
-        node.aabb.max = glm::max(node.aabb.max, leafPrim->vertices[2]);
+        leafPrim->growAABB(node.aabb);
+        // node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[0]);
+        // node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[1]);
+        // node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[2]);
+        // node.aabb.max = glm::max(node.aabb.max, leafPrim->vertices[0]);
+        // node.aabb.max = glm::max(node.aabb.max, leafPrim->vertices[1]);
+        // node.aabb.max = glm::max(node.aabb.max, leafPrim->vertices[2]);
     }
 }
 

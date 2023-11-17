@@ -96,9 +96,9 @@ HittableList spheresAndTris()
     return world;
 }
 
-std::vector<shared_ptr<Triangle>> triangles(int count)
+std::vector<shared_ptr<Primitive>> triangles(int count)
 {
-    auto tris      = std::vector<shared_ptr<Triangle>>(count);
+    auto tris      = std::vector<shared_ptr<Primitive>>(count);
     double maxPos  = 2.5;
     double maxEdge = 0.5;
     for (int i = 0; i < count; i++) {
@@ -119,7 +119,7 @@ std::vector<shared_ptr<Triangle>> triangles(int count)
     return tris;
 }
 
-std::vector<shared_ptr<Triangle>> box()
+std::vector<shared_ptr<Primitive>> box()
 {
     Vec3 center = Vec3(0.0);
     Vec3 s      = Vec3(2.0);
@@ -136,7 +136,7 @@ std::vector<shared_ptr<Triangle>> box()
         center + Vec3(-s.x, -s.y, -s.z), // 7
     };
 
-    auto tris = std::vector<shared_ptr<Triangle>>({
+    auto tris = std::vector<shared_ptr<Primitive>>({
         make_shared<Triangle>(v[0], v[1], v[3], mat),
         make_shared<Triangle>(v[0], v[3], v[2], mat),
         make_shared<Triangle>(v[0], v[4], v[5], mat),
@@ -495,20 +495,27 @@ void renderSimpleLight()
     TaskTimer tt;
     std::ofstream f;
 
-    HittableList world;
-
     auto tex = make_shared<Lambertian>(Color(0.8, 0.1, 0.2));
-    world.add(make_shared<Sphere>(Vec3(0.0, -1000.0, 0.0), 1000.0, tex));
-    world.add(make_shared<Sphere>(Vec3(0.0, 2.0, 0.0), 2.0, tex));
 
     auto difflight1 = make_shared<DiffuseLight>(Color(4.0));
     auto difflight2 = make_shared<DiffuseLight>(Color(16.0));
-    world.add(make_shared<Sphere>(Vec3(0.0, 8.0, 0.0), 1.5, difflight2));
-    world.add(make_shared<Quad>(
-        Vec3(3.0, 1.0, -2),
-        Vec3(2.0, 0.0, 0.0),
-        Vec3(0.0, 2.0, 0.0),
-        difflight1));
+
+    std::vector<shared_ptr<Primitive>> primitives({
+        make_shared<Sphere>(Vec3(0.0, -1000.0, 0.0), 1000.0, tex),
+        make_shared<Sphere>(Vec3(0.0, 2.0, 0.0), 2.0, tex),
+        make_shared<Sphere>(Vec3(0.0, 8.0, 0.0), 1.5, difflight2),
+        make_shared<Quad>(
+            Vec3(3.0, 1.0, -2),
+            Vec3(2.0, 0.0, 0.0),
+            Vec3(0.0, 2.0, 0.0),
+            difflight1),
+    });
+
+    tt.start("Build BVH . . .");
+    BVH world(primitives);
+    tt.stop();
+
+    std::cerr << "Nodes used: " << world.getNodesUsed() << "\n";
 
     Camera cam;
     cam.imageWidth      = 600;
@@ -540,7 +547,6 @@ void renderCornellBox()
 {
     TaskTimer tt;
     std::ofstream f;
-    HittableList world;
 
     // New render
     Camera cam;
@@ -560,36 +566,41 @@ void renderCornellBox()
     auto green = make_shared<Lambertian>(Color(.12, .45, .15));
     auto light = make_shared<DiffuseLight>(Color(15, 15, 15));
 
-    world.add(make_shared<Quad>(
-        Vec3(555, 0, 0),
-        Vec3(0, 555, 0),
-        Vec3(0, 0, 555),
-        green));
-    world.add(make_shared<Quad>(
-        Vec3(0, 0, 0),
-        Vec3(0, 555, 0),
-        Vec3(0, 0, 555),
-        red));
-    world.add(make_shared<Quad>(
-        Vec3(343, 554, 332),
-        Vec3(-130, 0, 0),
-        Vec3(0, 0, -105),
-        light));
-    world.add(make_shared<Quad>(
-        Vec3(0, 0, 0),
-        Vec3(555, 0, 0),
-        Vec3(0, 0, 555),
-        white));
-    world.add(make_shared<Quad>(
-        Vec3(555, 555, 555),
-        Vec3(-555, 0, 0),
-        Vec3(0, 0, -555),
-        white));
-    world.add(make_shared<Quad>(
-        Vec3(0, 0, 555),
-        Vec3(555, 0, 0),
-        Vec3(0, 555, 0),
-        white));
+    // Make empty cornell box
+    std::vector<shared_ptr<Primitive>> cornellBox({
+        make_shared<Quad>(
+            Vec3(555, 0, 0),
+            Vec3(0, 555, 0),
+            Vec3(0, 0, 555),
+            green),
+        make_shared<Quad>(Vec3(0, 0, 0), Vec3(0, 555, 0), Vec3(0, 0, 555), red),
+        make_shared<Quad>(
+            Vec3(343, 554, 332),
+            Vec3(-130, 0, 0),
+            Vec3(0, 0, -105),
+            light),
+        make_shared<Quad>(
+            Vec3(0, 0, 0),
+            Vec3(555, 0, 0),
+            Vec3(0, 0, 555),
+            white),
+        make_shared<Quad>(
+            Vec3(555, 555, 555),
+            Vec3(-555, 0, 0),
+            Vec3(0, 0, -555),
+            white),
+        make_shared<Quad>(
+            Vec3(0, 0, 555),
+            Vec3(555, 0, 0),
+            Vec3(0, 555, 0),
+            white),
+    });
+
+    tt.start("Build BVH . . .");
+    BVH world(cornellBox);
+    tt.stop();
+
+    std::cerr << "Nodes used: " << world.getNodesUsed() << "\n";
 
     tt.start("Render Cornell box . . .");
     cam.render(world);

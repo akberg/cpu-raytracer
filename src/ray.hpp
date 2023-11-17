@@ -51,6 +51,7 @@ extern Vec3 rayBgLightSource;
 extern std::atomic_uint64_t triIntersections;
 extern std::atomic_uint64_t aabbIntersections;
 extern std::atomic_uint64_t sphereIntersections;
+extern std::atomic_uint64_t quadIntersections;
 
 std::string logIntersections();
 

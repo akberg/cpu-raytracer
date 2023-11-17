@@ -12,6 +12,7 @@
 std::atomic_uint64_t triIntersections    = 0;
 std::atomic_uint64_t aabbIntersections   = 0;
 std::atomic_uint64_t sphereIntersections = 0;
+std::atomic_uint64_t quadIntersections   = 0;
 shared_ptr<STBImage> rayHdri;
 RayBG rayBackground   = RayBG::GRADIENT;
 Color rayBgColor      = Color(1.0, 1.0, 1.0);
@@ -29,7 +30,8 @@ std::string logIntersections()
     std::stringstream ss;
     uint64_t tot = aabbIntersections + triIntersections;
     ss << "Intersections : " << tot << " (AABB: " << aabbIntersections
-       << ", Tri: " << triIntersections << ")";
+       << ", Tri: " << triIntersections << ", Sphere: " << sphereIntersections
+       << ", Quad: " << quadIntersections << ")";
     return ss.str();
 }
 

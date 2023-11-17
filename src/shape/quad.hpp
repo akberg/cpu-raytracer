@@ -7,17 +7,20 @@
 #include "ray.hpp"
 #include "rtweekend.hpp"
 
-class Quad : public Hittable {
+class Quad : public Primitive {
 public:
     Quad(Vec3 q, Vec3 u, Vec3 v, shared_ptr<Material> m)
         : q(q)
         , uEdge(u)
         , vEdge(v)
-        , mat(m) { }
+        , mat(m)
+    { }
     virtual ~Quad() = default;
 
-    bool hit(const Ray& ray, double tMin, double tMax, HitRecord& rec)
-        const override {
+    bool
+    hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const override
+    {
+        quadIntersections++;
         // https://raytracing.github.io/books/RayTracingTheNextWeek.html
         // #quadrilaterals/ray-planeintersection
         auto n      = glm::cross(uEdge, vEdge);
@@ -51,7 +54,14 @@ public:
         return true;
     }
 
-    Vec3 centroid() const { return q + (uEdge + vEdge) / 2.0; }
+    Vec3 centroid() const override { return q + (uEdge + vEdge) / 2.0; }
+    void growAABB(Aabb& aabb) const override
+    {
+        aabb.grow(q);
+        aabb.grow(q + uEdge);
+        aabb.grow(q + vEdge);
+        aabb.grow(q + uEdge + vEdge);
+    }
 
 private:
     /// @brief Given the hit point in plane coordinates, return false if it is
@@ -61,7 +71,8 @@ private:
     /// @param b
     /// @param rec
     /// @return
-    bool isInterior(double a, double b, HitRecord& rec) const {
+    bool isInterior(double a, double b, HitRecord& rec) const
+    {
         if ((a < 0) || (1 < a) || (b < 0) || (1 < b)) return false;
 
         rec.u = a;
