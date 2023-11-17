@@ -36,10 +36,10 @@ BraceWrapping:
     # AfterCaseLabel: false
     # AfterClass: false
     # Following Rust style would be: false
-    AfterFunction: false
+    AfterFunction: true
     SplitEmptyFunction: false
     SplitEmptyRecord: false
-ColumnLimit: 100
+ColumnLimit: 80
 # Incompatible with bin-packing:
 InsertTrailingCommas: Wrapped
 IntegerLiteralSeparator:
