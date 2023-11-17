@@ -5,7 +5,8 @@ bool Lambertian::scatter(
     const HitRecord& rec,
     Color& attenuance,
     Ray& scattered // NOLINT
-) const {
+) const
+{
     Vec3 scatterDirection = rec.normal + randomUnitVector();
 
     // Catch degenerate scatter direction
@@ -20,7 +21,8 @@ bool Metal::scatter(
     const Vec3& vIn,
     const HitRecord& rec,
     Color& attenuance,
-    Ray& scattered) const {
+    Ray& scattered) const
+{
     Vec3 reflected = reflect(vIn, rec.normal);
     scattered      = Ray(rec.p, reflected + fuzz * randomInUnitSphere());
     attenuance     = albedo->value(rec.u, rec.v, rec.p);
@@ -31,7 +33,8 @@ bool TwoSidedMaterial::scatter(
     const Vec3& vIn,
     const HitRecord& rec,
     Color& attenuance,
-    Ray& scattered) const {
+    Ray& scattered) const
+{
     return rec.frontFace
              ? materialFront->scatter(vIn, rec, attenuance, scattered)
              : materialBack->scatter(vIn, rec, attenuance, scattered);
@@ -41,7 +44,8 @@ bool Dielectric::scatter(
     const Vec3& vIn,
     const HitRecord& rec,
     Color& attenuance,
-    Ray& scattered) const {
+    Ray& scattered) const
+{
     attenuance             = Color(1.0, 1.0, 1.0);
     double refractionRatio = rec.frontFace ? (1.0 / ir) : ir;
 

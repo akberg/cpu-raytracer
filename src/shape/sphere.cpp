@@ -1,12 +1,8 @@
 #include "sphere.hpp"
 
-Sphere::Sphere(Vec3 c, double r, shared_ptr<Material> m)
-    : center(c)
-    , radius(r)
-    , mat(m) { }
-
-bool Sphere::hit(
-    const Ray& ray, double tMin, double tMax, HitRecord& rec) const {
+bool Sphere::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const
+{
+    sphereIntersections++;
     Vec3 oc     = ray.origin - center;
     auto a      = glm::dot(ray.direction, ray.direction);
     auto half_b = glm::dot(oc, ray.direction);
@@ -40,7 +36,8 @@ bool Sphere::hit(
     return true;
 }
 
-void Sphere::getSphereUV(const Vec3& p, double& u, double& v) const {
+void Sphere::getSphereUV(const Vec3& p, double& u, double& v) const
+{
     auto theta = std::acos(-p.y);
     auto phi   = std::atan2(-p.z, p.x) + pi;
 

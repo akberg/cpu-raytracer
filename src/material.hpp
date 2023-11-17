@@ -21,7 +21,8 @@ public:
         const HitRecord& rec,
         Color& attenuance,
         Ray& scattered) const = 0;
-    virtual ~Material()       = default;
+    virtual Color emitted(const HitRecord& rec) const { return Color(0.0); }
+    virtual ~Material() = default;
     virtual std::string name() const { return "Unnamed Material"; };
 };
 
@@ -45,6 +46,7 @@ public:
         const HitRecord& rec,
         Color& attenuance,
         Ray& scattered) const override;
+
 public:
     shared_ptr<Texture> albedo;
 };
@@ -54,7 +56,8 @@ public:
     Metal(shared_ptr<Texture> a, double f) : albedo(a), fuzz(f < 1 ? f : 1) { }
     Metal(shared_ptr<Texture> a) : Metal(a, 0.0) { }
     Metal(const Color& a, double f)
-        : Metal(make_shared<SolidColorTexture>(a), f) { }
+        : Metal(make_shared<SolidColorTexture>(a), f)
+    { }
     Metal(const Color& a) : Metal(make_shared<SolidColorTexture>(a)) { }
     std::string name() const override { return "Metal"; }
 
@@ -72,7 +75,8 @@ public:
         Ray& scattered) const override;
 
     double getFuzz() const { return fuzz; }
-    double setFuzz(double f) {
+    double setFuzz(double f)
+    {
         fuzz = f < 1 ? f : 1;
         return fuzz;
     }
@@ -88,7 +92,8 @@ class TwoSidedMaterial : public Material {
 public:
     TwoSidedMaterial(shared_ptr<Material> mFront, shared_ptr<Material> mBack)
         : materialFront(mFront)
-        , materialBack(mBack) { }
+        , materialBack(mBack)
+    { }
     std::string name() const override { return "TwoSided"; }
 
     /// @brief Calculate scatter ray according to material properties
@@ -125,10 +130,33 @@ public:
     double ir;
 
 private:
-    static double reflectance(double cosine, double refIdx) {
+    static double reflectance(double cosine, double refIdx)
+    {
         // Schlick's approximation for reflectance
         auto r0 = (1 - refIdx) / (1 + refIdx);
         r0      = r0 * r0;
         return r0 + (1 - r0) * pow((1 - cosine), 5.0);
     }
+};
+
+class DiffuseLight : public Material {
+public:
+    DiffuseLight(shared_ptr<Texture> a) : emit(a) { }
+    DiffuseLight(Color c) : emit(make_shared<SolidColorTexture>(c)) { }
+    /// @brief Add no reflection
+    bool scatter(
+        const Vec3& vIn,
+        const HitRecord& rec,
+        Color& attenuance,
+        Ray& scattered) const override
+    {
+        return false;
+    }
+    Color emitted(const HitRecord& rec) const override
+    {
+        return emit->value(rec.u, rec.v, rec.p);
+    }
+
+private:
+    shared_ptr<Texture> emit;
 };

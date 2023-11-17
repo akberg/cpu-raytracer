@@ -44,7 +44,8 @@ auto matMetLight  = make_shared<Metal>(Color(0.99, 0.99, 0.5), 0.2);
 auto matRG        = make_shared<TwoSidedMaterial>(matMetDark, matLambGreen);
 auto dielectric   = make_shared<Dielectric>(1.5);
 
-HittableList spheres() {
+HittableList spheres()
+{
     // World
     HittableList world;
     // Visualise axes:
@@ -68,7 +69,8 @@ HittableList spheres() {
     return world;
 }
 
-HittableList spheresAndTris() {
+HittableList spheresAndTris()
+{
     HittableList world = spheres();
     world.add(make_shared<Triangle>( // Cw pointing down
         Vec3(0.0, 0.2, -1.0),
@@ -94,15 +96,19 @@ HittableList spheresAndTris() {
     return world;
 }
 
-std::vector<shared_ptr<Triangle>> triangles(int count) {
+std::vector<shared_ptr<Triangle>> triangles(int count)
+{
     auto tris      = std::vector<shared_ptr<Triangle>>(count);
     double maxPos  = 2.5;
     double maxEdge = 0.5;
     for (int i = 0; i < count; i++) {
 
-        Vec3 v0 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5) * maxPos * 2.0;
-        Vec3 v1 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5) * maxEdge * 2.0;
-        Vec3 v2 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5) * maxEdge * 2.0;
+        Vec3 v0 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5)
+                * maxPos * 2.0;
+        Vec3 v1 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5)
+                * maxEdge * 2.0;
+        Vec3 v2 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5)
+                * maxEdge * 2.0;
 
         tris[i] = make_shared<Triangle>(
             v0,
@@ -113,7 +119,8 @@ std::vector<shared_ptr<Triangle>> triangles(int count) {
     return tris;
 }
 
-std::vector<shared_ptr<Triangle>> box() {
+std::vector<shared_ptr<Triangle>> box()
+{
     Vec3 center = Vec3(0.0);
     Vec3 s      = Vec3(2.0);
     auto mat    = matLambRed;
@@ -146,7 +153,8 @@ std::vector<shared_ptr<Triangle>> box() {
     return tris;
 }
 
-void renderOneBox() {
+void renderOneBox()
+{
     TaskTimer tt;
     std::ofstream f;
 
@@ -172,7 +180,8 @@ void renderOneBox() {
     f.close();
 }
 
-void renderOneSphere() {
+void renderOneSphere()
+{
     TaskTimer tt;
     std::ofstream f;
 
@@ -201,7 +210,8 @@ void renderOneSphere() {
     f.close();
 }
 
-void renderEarth(double hour = 0.0) {
+void renderEarth(double hour = 0.0)
+{
     TaskTimer tt;
     std::ofstream f;
 
@@ -231,7 +241,8 @@ void renderEarth(double hour = 0.0) {
     f.close();
 }
 
-void renderTwoSpheres() {
+void renderTwoSpheres()
+{
     TaskTimer tt;
     std::ofstream f;
 
@@ -247,13 +258,18 @@ void renderTwoSpheres() {
     cam.defocusAngle    = 0.0;
 
     // STBImage tex("resources/cgaxis_hdri_skies_01_52.jpg");
-    auto imgTex             = make_shared<ImageTexture>("resources/cgaxis_hdri_skies_01_52.jpg");
-    auto imgTexEarth        = make_shared<ImageTexture>("resources/earthmap.jpg");
+    auto imgTex =
+        make_shared<ImageTexture>("resources/cgaxis_hdri_skies_01_52.jpg");
+    auto imgTexEarth = make_shared<ImageTexture>("resources/earthmap.jpg");
     imgTex->repeatedTexture = 1.0;
 
-    auto checker = make_shared<CheckerTexture>(0.025, Color(1.0), Color(0.0, 0.0, 1.0));
-    auto grad =
-        make_shared<GradientTexture>(Color(1.0, 0.0, 0.0), Color(0.0, 0.0, 1.0), true, false);
+    auto checker =
+        make_shared<CheckerTexture>(0.025, Color(1.0), Color(0.0, 0.0, 1.0));
+    auto grad = make_shared<GradientTexture>(
+        Color(1.0, 0.0, 0.0),
+        Color(0.0, 0.0, 1.0),
+        true,
+        false);
     auto mat1 = make_shared<Metal>(checker, 0.1);
     // auto mat2 = make_shared<Metal>(Color(0.95, 0.95, 0.95), 0.6);
     auto mat2 = make_shared<Lambertian>(imgTexEarth);
@@ -274,7 +290,8 @@ void renderTwoSpheres() {
     f.close();
 }
 
-void renderQuads() {
+void renderQuads()
+{
     TaskTimer tt;
     std::ofstream f;
 
@@ -297,11 +314,31 @@ void renderQuads() {
     auto lowerTeal   = make_shared<Lambertian>(Color(0.2, 0.8, 0.8));
 
     HittableList world;
-    world.add(make_shared<Quad>(Vec3(-3, -2, 5), Vec3(0, 0, -4), Vec3(0, 4, 0), leftRed));
-    world.add(make_shared<Quad>(Vec3(-2, -2, 0), Vec3(4, 0, 0), Vec3(0, 4, 0), backGreen));
-    world.add(make_shared<Quad>(Vec3(3, -2, 1), Vec3(0, 0, 4), Vec3(0, 4, 0), rightBlue));
-    world.add(make_shared<Quad>(Vec3(-2, 3, 1), Vec3(4, 0, 0), Vec3(0, 0, 4), upperOrange));
-    world.add(make_shared<Quad>(Vec3(-2, -3, 5), Vec3(4, 0, 0), Vec3(0, 0, -4), lowerTeal));
+    world.add(make_shared<Quad>(
+        Vec3(-3, -2, 5),
+        Vec3(0, 0, -4),
+        Vec3(0, 4, 0),
+        leftRed));
+    world.add(make_shared<Quad>(
+        Vec3(-2, -2, 0),
+        Vec3(4, 0, 0),
+        Vec3(0, 4, 0),
+        backGreen));
+    world.add(make_shared<Quad>(
+        Vec3(3, -2, 1),
+        Vec3(0, 0, 4),
+        Vec3(0, 4, 0),
+        rightBlue));
+    world.add(make_shared<Quad>(
+        Vec3(-2, 3, 1),
+        Vec3(4, 0, 0),
+        Vec3(0, 0, 4),
+        upperOrange));
+    world.add(make_shared<Quad>(
+        Vec3(-2, -3, 5),
+        Vec3(4, 0, 0),
+        Vec3(0, 0, -4),
+        lowerTeal));
     tt.start("Render quads . . .\n");
     cam.render(world);
     tt.stop();
@@ -313,7 +350,8 @@ void renderQuads() {
     f.close();
 }
 
-void renderTriangles(int nTris = 32) {
+void renderTriangles(int nTris = 32)
+{
     TaskTimer tt;
     std::ofstream f;
 
@@ -360,32 +398,53 @@ void renderTriangles(int nTris = 32) {
     f.close();
 }
 
-void renderUnityMesh() {
+void renderUnityMesh()
+{
     TaskTimer tt;
     std::ofstream f;
 
     // New render
     Camera cam;
-    cam.imageWidth      = 200;
+    cam.imageWidth      = 400;
     cam.aspectRatio     = 1.0;
     cam.vfov            = 80;
-    cam.samplesPerPixel = 24;
-    cam.maxDepth        = 10; // default 10
+    cam.samplesPerPixel = 100;
+    cam.maxDepth        = 20; // default 10
     cam.lookAt          = Vec3(-1.1, 0.0, 0.0);
     cam.lookFrom        = Vec3(-1.3, 0.2, 2.4);
     cam.vup             = Vec3(0.0, 1.0, 0.0);
     cam.focusDist       = 1.5;
     cam.defocusAngle    = 0.0;
-    rayBackground       = RayBG::SINGLE_LIGHT;
-    rayBgColor          = Color(1.0, 1.0, 1.0);
-    rayBgLightSource    = cam.lookFrom;
 
-    auto tris = loadTriFile("resources/unity.tri");
+    auto tris     = loadTriFile("resources/unity.tri");
+    auto light    = make_shared<DiffuseLight>(Color(30.0));
     double yPlane = -1.3;
-    tris.push_back(make_shared<Triangle>(Vec3(1.0, yPlane, 1.0), Vec3(0.0, yPlane, 1.0), Vec3(0.0, yPlane, -1.0), matMetRed2));
-    tris.push_back(make_shared<Triangle>(Vec3(1.0, yPlane, 1.0), Vec3(0.0, yPlane, -1.0), Vec3(1.0, yPlane, -1.0), matMetRed2));
-    tris.push_back(make_shared<Triangle>(Vec3(0.0, yPlane, 2.0), Vec3(-4.0, yPlane, 2.0), Vec3(-4.0, yPlane, -2.0), matMetLight));
-    tris.push_back(make_shared<Triangle>(Vec3(0.0, yPlane, 2.0), Vec3(-4.0, yPlane, -2.0), Vec3(0.0, yPlane, -2.0), matMetLight));
+    tris.push_back(make_shared<Triangle>(
+        Vec3(1.0, yPlane, 1.0),
+        Vec3(0.0, yPlane, 1.0),
+        Vec3(0.0, yPlane, -1.0),
+        matMetRed2));
+    tris.push_back(make_shared<Triangle>(
+        Vec3(1.0, yPlane, 1.0),
+        Vec3(0.0, yPlane, -1.0),
+        Vec3(1.0, yPlane, -1.0),
+        matMetRed2));
+    tris.push_back(make_shared<Triangle>(
+        Vec3(0.0, yPlane, 2.0),
+        Vec3(-4.0, yPlane, 2.0),
+        Vec3(-4.0, yPlane, -2.0),
+        matMetLight));
+    tris.push_back(make_shared<Triangle>(
+        Vec3(0.0, yPlane, 2.0),
+        Vec3(-4.0, yPlane, -2.0),
+        Vec3(0.0, yPlane, -2.0),
+        matMetLight));
+
+    tris.push_back(make_shared<Triangle>(
+        Vec3(1.0, 0.0, 0.0),
+        Vec3(1.0, 0.0, 1.0),
+        Vec3(1.0, 0.5, 1.0),
+        light));
 
     tt.start("Build BVH . . .\n");
     BVH world(tris);
@@ -404,8 +463,7 @@ void renderUnityMesh() {
     cam.img.writeImage(f);
     f.close();
 
-    cam.lookFrom        = Vec3(-1.0, 0.2, 2.8);
-    rayBgLightSource    = cam.lookFrom;
+    cam.lookFrom = Vec3(-1.0, 0.2, 2.8);
     tt.start("Render unity.tri mesh . . .\n");
     cam.render(world);
     tt.stop();
@@ -418,8 +476,7 @@ void renderUnityMesh() {
     cam.img.writeImage(f);
     f.close();
 
-    cam.lookFrom        = Vec3(-1.0, 2.0, 1.8);
-    rayBgLightSource    = cam.lookFrom;
+    cam.lookFrom = Vec3(-1.0, 2.0, 1.8);
     tt.start("Render unity.tri mesh . . .\n");
     cam.render(world);
     tt.stop();
@@ -431,19 +488,140 @@ void renderUnityMesh() {
     if (!f.is_open()) std::cerr << "Failed to open file: " << filename << "\n";
     cam.img.writeImage(f);
     f.close();
-
 }
 
-int main(int argc, char* argv[]) {
+void renderSimpleLight()
+{
+    TaskTimer tt;
+    std::ofstream f;
+
+    HittableList world;
+
+    auto tex = make_shared<Lambertian>(Color(0.8, 0.1, 0.2));
+    world.add(make_shared<Sphere>(Vec3(0.0, -1000.0, 0.0), 1000.0, tex));
+    world.add(make_shared<Sphere>(Vec3(0.0, 2.0, 0.0), 2.0, tex));
+
+    auto difflight1 = make_shared<DiffuseLight>(Color(4.0));
+    auto difflight2 = make_shared<DiffuseLight>(Color(16.0));
+    world.add(make_shared<Sphere>(Vec3(0.0, 8.0, 0.0), 1.5, difflight2));
+    world.add(make_shared<Quad>(
+        Vec3(3.0, 1.0, -2),
+        Vec3(2.0, 0.0, 0.0),
+        Vec3(0.0, 2.0, 0.0),
+        difflight1));
+
+    Camera cam;
+    cam.imageWidth      = 600;
+    cam.aspectRatio     = 16.0 / 9.0;
+    cam.samplesPerPixel = 100;
+    cam.maxDepth        = 50;
+    cam.vfov            = 20;
+    cam.lookFrom        = Vec3(26, 3, 6);
+    cam.lookAt          = Vec3(0.0, 2.0, 0.0);
+    cam.vup             = Vec3(0.0, 1.0, 0.0);
+    cam.defocusAngle    = 0.0;
+    cam.background      = Color(0.0);
+
+    tt.start("Rendering simple light scene . . .");
+    cam.render(world);
+    tt.stop();
+
+    std::cerr << logIntersections() << " spheres: " << sphereIntersections
+              << "\n";
+
+    std::string filename = "runtime/simpleLight.ppm";
+    f.open(filename);
+    if (!f.is_open()) std::cerr << "Failed to open file: " << filename << "\n";
+    cam.img.writeImage(f);
+    f.close();
+}
+
+void renderCornellBox()
+{
+    TaskTimer tt;
+    std::ofstream f;
+    HittableList world;
+
+    // New render
+    Camera cam;
+    cam.imageWidth      = 600;
+    cam.aspectRatio     = 1.0;
+    cam.vfov            = 40;
+    cam.samplesPerPixel = 200;
+    cam.maxDepth        = 50; // default 10
+    cam.lookAt          = Vec3(278.0, 278.0, 0.0);
+    cam.lookFrom        = Vec3(278.0, 278.0, -800.0);
+    cam.vup             = Vec3(0.0, 1.0, 0.0);
+    cam.focusDist       = 1.5;
+    cam.defocusAngle    = 0.0;
+
+    auto red   = make_shared<Lambertian>(Color(.65, .05, .05));
+    auto white = make_shared<Lambertian>(Color(.73, .73, .73));
+    auto green = make_shared<Lambertian>(Color(.12, .45, .15));
+    auto light = make_shared<DiffuseLight>(Color(15, 15, 15));
+
+    world.add(make_shared<Quad>(
+        Vec3(555, 0, 0),
+        Vec3(0, 555, 0),
+        Vec3(0, 0, 555),
+        green));
+    world.add(make_shared<Quad>(
+        Vec3(0, 0, 0),
+        Vec3(0, 555, 0),
+        Vec3(0, 0, 555),
+        red));
+    world.add(make_shared<Quad>(
+        Vec3(343, 554, 332),
+        Vec3(-130, 0, 0),
+        Vec3(0, 0, -105),
+        light));
+    world.add(make_shared<Quad>(
+        Vec3(0, 0, 0),
+        Vec3(555, 0, 0),
+        Vec3(0, 0, 555),
+        white));
+    world.add(make_shared<Quad>(
+        Vec3(555, 555, 555),
+        Vec3(-555, 0, 0),
+        Vec3(0, 0, -555),
+        white));
+    world.add(make_shared<Quad>(
+        Vec3(0, 0, 555),
+        Vec3(555, 0, 0),
+        Vec3(0, 555, 0),
+        white));
+
+    tt.start("Render Cornell box . . .");
+    cam.render(world);
+    tt.stop();
+
+    std::cerr << logIntersections() << " spheres: " << sphereIntersections
+              << "\n";
+
+    std::string filename = "runtime/cornellBox.ppm";
+    f.open(filename);
+    if (!f.is_open()) std::cerr << "Failed to open file: " << filename << "\n";
+    cam.img.writeImage(f);
+    f.close();
+}
+
+int main(int argc, char* argv[])
+{
     for (int i = 1; i < argc; i++) {
         std::cerr << "Unexpected argument: " << argv[i] << std::endl;
     }
 
-    std::cout << "A BVH node currently requires " << sizeof(BVHNode) << " bytes.\n";
-    // renderEarth();
-    // renderQuads(); // Best time 21645ms
-    // renderOneBox(); // Best time 7804ms
-    renderUnityMesh(); // 100 samples/14 depth Best time 93602ms
-    // renderTriangles(178); // 178 tris best time 8351ms
-    // renderTriangles(512); // 512 tris best time 14183ms
+    std::cout << "A BVH node currently requires " << sizeof(BVHNode)
+              << " bytes.\n";
+
+    switch (8) {
+    case 1: renderEarth(); break;
+    case 2: renderQuads(); break;        // Best time 21645ms
+    case 3: renderOneBox(); break;       // Best time 7804ms
+    case 4: renderTriangles(178); break; // 178 tris best time 8351ms
+    case 5: renderTriangles(512); break; // 512 tris best time 14183ms
+    case 6: renderUnityMesh(); break; // 100 samples/14 depth Best time 93602ms
+    case 7: renderSimpleLight(); break;
+    case 8: renderCornellBox(); break;
+    }
 }

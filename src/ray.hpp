@@ -23,7 +23,8 @@ public:
         , tMin(tMin)
         , tMax(tMax) {};
 
-    Ray(const Vec3& origin, const Vec3& direction) : Ray(origin, direction, -infinity, infinity) {};
+    Ray(const Vec3& origin, const Vec3& direction)
+        : Ray(origin, direction, -infinity, infinity) {};
 
     friend std::ostream& operator<<(std::ostream& os, const Ray& ray);
 
@@ -49,11 +50,10 @@ extern Vec3 rayBgLightSource;
 
 extern std::atomic_uint64_t triIntersections;
 extern std::atomic_uint64_t aabbIntersections;
+extern std::atomic_uint64_t sphereIntersections;
 
 std::string logIntersections();
 
 class Hittable;
 
 Color bgRayColor(const Ray& r);
-
-Color rayColor(const Ray& ray, const Hittable& world, int depth = 10);

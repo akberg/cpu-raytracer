@@ -25,9 +25,10 @@ public:
     double vfov        = 90;
 
     // Camera settings - - -
-    Vec3 lookFrom = Vec3(0.0, 0.0, 1.0); ///< Point camera is looking from
-    Vec3 lookAt   = Vec3(0.0, 0.0, 0.0); ///< Point camera is looking at
-    Vec3 vup      = Vec3(0.0, 1.0, 0.0); ///< Camera relative Up
+    Vec3 lookFrom    = Vec3(0.0, 0.0, 1.0); ///< Point camera is looking from
+    Vec3 lookAt      = Vec3(0.0, 0.0, 0.0); ///< Point camera is looking at
+    Vec3 vup         = Vec3(0.0, 1.0, 0.0); ///< Camera relative Up
+    Color background = Color(0.0); ///< Background colour, defaults to black
 
     /// @brief Variation angle of rays through each pixel
     double defocusAngle = 0;
@@ -50,6 +51,8 @@ private:
     Vec3 pixelSampleSquare() const;
     /// @brief Return a point offsetting ray origin within a unit disk.
     Vec3 defocusDiskSample() const;
+
+    Color rayColor(const Ray& ray, const Hittable& world, int depth = 10);
 
     Vec3 viewportLowerLeft;
     /// @brief Image height (in pixels?)

@@ -34,10 +34,10 @@ public:
 
     int setPixel(int x, int y, Color color) override {
         // auto scale = 1.0 / samplesPerPixel;
-        if (color.r > 1.0 || color.g > 1.0 || color.b > 1.0) {
-            std::cerr << "Overflow: " << color << std::endl;
-            return -EINVAL;
-        }
+        // if (color.r > 1.0 || color.g > 1.0 || color.b > 1.0) {
+        //     std::cerr << "Overflow: " << color << std::endl;
+        //     return -EINVAL;
+        // }
 
         // gamma=2 correction
         double gamma = 1.25;
