@@ -1,12 +1,14 @@
 /// @file BVH implementation
-#include "bvh2.hpp"
+#include "bvh3.hpp"
 
 #include "aabb.hpp"
 
 #include <iostream>
 #include <sstream>
 
-blikker_pt2::BVH::BVH(const std::vector<shared_ptr<Primitive>>& primitives)
+namespace blikker_pt3 {
+
+BVH::BVH(const std::vector<shared_ptr<Primitive>>& primitives)
     : primitives(primitives)
     , N(primitives.size()) {
     // Upper limit of tree size.
@@ -23,8 +25,7 @@ blikker_pt2::BVH::BVH(const std::vector<shared_ptr<Primitive>>& primitives)
     // std::cerr << "Start recursive subdivide()\n";
     subdivide(rootNodeIdx);
 }
-
-std::string blikker_pt2::BVH::tree(size_t nodeIdx, int depth) const {
+std::string BVH::tree(size_t nodeIdx, int depth) const {
     const Node& node = nodes[nodeIdx];
     int indent          = depth;
     std::stringstream os;
@@ -42,7 +43,7 @@ std::string blikker_pt2::BVH::tree(size_t nodeIdx, int depth) const {
     return os.str();
 }
 
-void blikker_pt2::BVH::updateNodeBounds(const size_t nodeIdx) {
+void BVH::updateNodeBounds(const size_t nodeIdx) {
     Node& node = nodes[nodeIdx];
     node.aabb.min = Vec3(1e30f);
     node.aabb.max = Vec3(-1e30f);
@@ -67,7 +68,11 @@ void blikker_pt2::BVH::updateNodeBounds(const size_t nodeIdx) {
     }
 }
 
-void blikker_pt2::BVH::subdivide(const size_t nodeIdx) {
+double BVH::findBestSplitPlane(Node& node, int& axis, double& splitPos) {
+
+}
+
+void BVH::subdivide(const size_t nodeIdx) {
     Node& node = nodes[nodeIdx];
     // 1. Determine the axis and position of the split plane, using SAH.
 
@@ -142,7 +147,7 @@ void blikker_pt2::BVH::subdivide(const size_t nodeIdx) {
     subdivide(rightChildIdx);
 }
 
-bool blikker_pt2::BVH::intersect(
+bool BVH::intersect(
     const size_t nodeIdx,
     const Ray& r,
     const double tMin,
@@ -185,7 +190,7 @@ bool blikker_pt2::BVH::intersect(
     return anyHit;
 }
 
-bool blikker_pt2::BVH::intersectIterative(
+bool BVH::intersectIterative(
     const size_t nodeIdx,
     const Ray& r,
     const double tMin,
@@ -246,3 +251,5 @@ bool blikker_pt2::BVH::intersectIterative(
         }
     }
 }
+
+}; // namespace blikker_pt3

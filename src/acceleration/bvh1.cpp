@@ -15,7 +15,7 @@ blikker_basic::BVH::BVH(const std::vector<shared_ptr<Triangle>>& primitives)
     primIndices.resize(N);
     for (size_t i = 0; i < N; i++) primIndices[i] = i;
 
-    BVHNode& root      = nodes[rootNodeIdx];
+    Node& root      = nodes[rootNodeIdx];
     root.mLeftChildIdx = 0;
     root.firstPrimIdx  = 0;
     root.primCount     = N;
@@ -25,7 +25,7 @@ blikker_basic::BVH::BVH(const std::vector<shared_ptr<Triangle>>& primitives)
 }
 
 std::string blikker_basic::BVH::tree(size_t nodeIdx, int depth) const {
-    const BVHNode& node = nodes[nodeIdx];
+    const Node& node = nodes[nodeIdx];
     int indent          = depth;
     std::stringstream os;
     // os << std::string(indent, ' ') << nodeIdx << "("<<depth<<")";
@@ -43,7 +43,7 @@ std::string blikker_basic::BVH::tree(size_t nodeIdx, int depth) const {
 }
 
 void blikker_basic::BVH::updateNodeBounds(const size_t nodeIdx) {
-    BVHNode& node = nodes[nodeIdx];
+    Node& node = nodes[nodeIdx];
     node.aabb.min = Vec3(1e30f);
     node.aabb.max = Vec3(-1e30f);
     size_t first  = node.firstPrimIdx;
@@ -67,7 +67,7 @@ void blikker_basic::BVH::updateNodeBounds(const size_t nodeIdx) {
 }
 
 void blikker_basic::BVH::subdivide(const size_t nodeIdx) {
-    BVHNode& node = nodes[nodeIdx];
+    Node& node = nodes[nodeIdx];
     if (node.primCount <= 2) return;
     // 1. Determine the axis and position of the split plane.
     Vec3 extent = node.aabb.max - node.aabb.min;
@@ -133,7 +133,7 @@ bool blikker_basic::BVH::intersect(
     const double tMax,
     HitRecord& rec,
     int depth) const {
-    const BVHNode& node = nodes[nodeIdx];
+    const Node& node = nodes[nodeIdx];
     // std::cerr << std::string(depth, ' ') << "Node " << nodeIdx << " ";
     if (!node.aabb.intersect(r, tMin, tMax)) return false;
 

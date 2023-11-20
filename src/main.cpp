@@ -1,5 +1,6 @@
 #include "acceleration/bvh1.hpp"
 #include "acceleration/bvh2.hpp"
+#include "acceleration/bvh3.hpp"
 #include "camera.hpp"
 #include "hittableList.hpp"
 #include "image.hpp"
@@ -18,8 +19,7 @@
 #include <fstream>
 #include <iostream>
 
-using blikker_pt2::BVH;
-using blikker_pt2::BVHNode;
+using blikker_pt3::BVH;
 
 const int N_MATERIALS                       = 9;
 shared_ptr<Material> materials[N_MATERIALS] = {
@@ -622,7 +622,7 @@ int main(int argc, char* argv[])
         std::cerr << "Unexpected argument: " << argv[i] << std::endl;
     }
 
-    std::cout << "A BVH node currently requires " << sizeof(BVHNode)
+    std::cout << "A BVH node currently requires " << sizeof(BVH::Node)
               << " bytes.\n";
 
     switch (8) {

@@ -15,7 +15,7 @@
 
 #include <vector>
 
-namespace blikker_pt2 {
+namespace blikker_pt3 {
 class BVH : public Hittable {
 public:
     /// @brief Build Bounding Volume Hierarchy. In the reference implementation,
@@ -46,11 +46,12 @@ public:
         size_t left() const { return mLeftChildIdx; }
         size_t right() const { return mLeftChildIdx + 1; }
     };
-
 private:
     /// @brief Update AABB bounds of root node.
     /// @param nodeIdx
     void updateNodeBounds(const size_t nodeIdx);
+
+    double findBestSplitPlane(Node& node, int& axis, double& splitPos);
 
     /// @brief Recursive BVH building. Determine split axis and position, split
     /// and partition primitives, create child nodes and recurse.

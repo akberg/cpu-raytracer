@@ -2,6 +2,7 @@ sources += files(
     'acceleration/aabb.cpp',
     'acceleration/bvh1.cpp',
     'acceleration/bvh2.cpp',
+    'acceleration/bvh3.cpp',
     'camera.cpp',
     'main.cpp',
     'material.cpp',
