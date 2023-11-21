@@ -10,14 +10,15 @@ namespace blikker_pt3 {
 
 BVH::BVH(const std::vector<shared_ptr<Primitive>>& primitives)
     : primitives(primitives)
-    , N(primitives.size()) {
+    , N(primitives.size())
+{
     // Upper limit of tree size.
     nodes.resize(N * 2);
     // Populate index list
     primIndices.resize(N);
     for (size_t i = 0; i < N; i++) primIndices[i] = i;
 
-    Node& root      = nodes[rootNodeIdx];
+    Node& root         = nodes[rootNodeIdx];
     root.mLeftChildIdx = 0;
     root.firstPrimIdx  = 0;
     root.primCount     = N;
@@ -25,9 +26,10 @@ BVH::BVH(const std::vector<shared_ptr<Primitive>>& primitives)
     // std::cerr << "Start recursive subdivide()\n";
     subdivide(rootNodeIdx);
 }
-std::string BVH::tree(size_t nodeIdx, int depth) const {
+std::string BVH::tree(size_t nodeIdx, int depth) const
+{
     const Node& node = nodes[nodeIdx];
-    int indent          = depth;
+    int indent       = depth;
     std::stringstream os;
     // os << std::string(indent, ' ') << nodeIdx << "("<<depth<<")";
     os << std::string(indent, ' ') << nodeIdx << ": aabb.min=" << node.aabb.min
@@ -43,8 +45,9 @@ std::string BVH::tree(size_t nodeIdx, int depth) const {
     return os.str();
 }
 
-void BVH::updateNodeBounds(const size_t nodeIdx) {
-    Node& node = nodes[nodeIdx];
+void BVH::updateNodeBounds(const size_t nodeIdx)
+{
+    Node& node    = nodes[nodeIdx];
     node.aabb.min = Vec3(1e30f);
     node.aabb.max = Vec3(-1e30f);
     size_t first  = node.firstPrimIdx;
@@ -68,41 +71,69 @@ void BVH::updateNodeBounds(const size_t nodeIdx) {
     }
 }
 
-double BVH::findBestSplitPlane(Node& node, int& axis, double& splitPos) {
-
+float BVH::evaluateSAH(Node& node, int axis, float pos)
+{
+    Aabb leftBox { .min = Vec3(1e30), .max = Vec3(-1e30) };
+    Aabb rightBox { .min = Vec3(1e30), .max = Vec3(-1e30) };
+    int leftCount = 0, rightCount = 0;
+    for (size_t i = 0; i < node.primCount; i++) {
+        auto prim = primitives[primIndices[node.firstPrimIdx + i]];
+        if (prim->centroid()[axis] < pos) {
+            leftCount++;
+            prim->growAABB(leftBox);
+        } else {
+            rightCount++;
+            prim->growAABB(rightBox);
+        }
+    }
+    float cost = leftCount * leftBox.area() + rightCount * rightBox.area();
+    return cost > 0.0 ? cost : 1e30f;
 }
 
-void BVH::subdivide(const size_t nodeIdx) {
+double BVH::findBestSplitPlane(Node& node, int& axis, double& splitPos)
+{
+    // Uniform SAH. Instead of doing an exhaustive sweep of all primitives for a
+    // O(N^2) cost, step by uniform intervals for a O(N) cost.
+    float bestCost = 1e30f;
+    // ? What is then the best bin count? Would maybe depend on primitive count?
+    uint32_t bins  = 48;
+    for (uint32_t a = 0; a < 3; a++) {
+        float boundsMin = 1e30f;
+        float boundsMax = -1e30f;
+        for (int i = 0; i < node.primCount; i++) {
+            auto prim = primitives[primIndices[node.mLeftChildIdx + i]];
+            boundsMin = std::min(boundsMin, (float)prim->centroid()[a]);
+            boundsMax = std::max(boundsMax, (float)prim->centroid()[a]);
+        }
+        float step      = (boundsMax - boundsMin) / bins;
+        for (uint32_t i = 0; i < bins; i++) {
+            double candidatePos = boundsMin + i * step;
+            float cost          = evaluateSAH(node, a, candidatePos);
+            if (cost < bestCost) {
+                bestCost = cost;
+                splitPos = candidatePos;
+                axis     = a;
+            }
+        }
+    }
+    return bestCost;
+}
+
+void BVH::subdivide(const size_t nodeIdx)
+{
     Node& node = nodes[nodeIdx];
     // 1. Determine the axis and position of the split plane, using SAH.
 
     // 1a. Exhaustive SAH evaluation to find best split.
-    int bestAxis   = -1;
-    double bestPos = 0;
-    float bestCost = 1e30f;
-
-    for (int axis = 0; axis < 3; axis++)
-        for (int i = 0; i < node.primCount; i++) {
-            auto tri = primitives[primIndices[node.firstPrimIdx + i]];
-            double candidatePos = tri->centroid()[axis];
-            float cost          = evaluateSAH(node, axis, candidatePos);
-            if (cost < bestCost) {
-                bestCost = cost;
-                bestPos  = candidatePos;
-                bestAxis = axis;
-            }
-        }
+    int axis;        //   = -1;
+    double splitPos; // = 0;
+    float splitCost = findBestSplitPlane(node, axis, splitPos);
 
     // 1b. Evaluate if a split is actually improving from the parent node.
-    float parentArea = node.aabb.area();
-    float parentCost = node.primCount * parentArea;
-
-    if (bestCost >= parentCost) {
+    float noSplitCost = node.cost();
+    if (splitCost >= noSplitCost) {
         return;
     }
-
-    int axis       = bestAxis;
-    float splitPos = bestPos;
 
     // 2. Split the group of primitives in two halves using the split plane.
     // Implementing partition
@@ -153,7 +184,8 @@ bool BVH::intersect(
     const double tMin,
     const double tMax,
     HitRecord& rec,
-    int depth) const {
+    int depth) const
+{
     const Node& node = nodes[nodeIdx];
     // std::cerr << std::string(depth, ' ') << "Node " << nodeIdx << " ";
     if (!node.aabb.intersect(r, tMin, tMax)) return false;
@@ -195,7 +227,8 @@ bool BVH::intersectIterative(
     const Ray& r,
     const double tMin,
     const double tMax,
-    HitRecord& rec) const {
+    HitRecord& rec) const
+{
     const Node* node = &nodes[rootNodeIdx];
     const Node* stack[64]; // Magic number stack size
     uint32_t stackPtr = 0;
@@ -210,11 +243,12 @@ bool BVH::intersectIterative(
             for (size_t i = 0; i < node->primCount; i++) {
                 auto prim = primitives[primIndices[node->firstPrimIdx + i]];
                 if (prim->hit(r, tMin, closest, tempRec)) {
-                    anyHit = true;
+                    anyHit  = true;
                     closest = tempRec.t;
-                    rec = tempRec;
+                    rec     = tempRec;
                     // if (!rec.mat)
-                    //     std::cerr << "Returned record with nullptr material: "<< prim <<"\n";
+                    //     std::cerr << "Returned record with nullptr material:
+                    //     "<< prim <<"\n";
                 }
             }
             if (!stackPtr) {
@@ -241,8 +275,8 @@ bool BVH::intersectIterative(
             if (!stackPtr) {
                 // No more nodes to check, return current result
                 return anyHit;
-            }
-            else node = stack[--stackPtr];
+            } else
+                node = stack[--stackPtr];
         } else {
             // Prepare child1
             node = child1;

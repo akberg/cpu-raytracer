@@ -45,6 +45,7 @@ public:
         bool isLeaf() const { return primCount > 0; }
         size_t left() const { return mLeftChildIdx; }
         size_t right() const { return mLeftChildIdx + 1; }
+        float cost() const { return primCount * aabb.area(); }
     };
 private:
     /// @brief Update AABB bounds of root node.
