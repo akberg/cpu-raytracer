@@ -45,9 +45,9 @@ public:
         auto gf      = std::pow(color.g, 1.0 / gamma);
         auto bf      = std::pow(color.b, 1.0 / gamma);
 
-        auto r = static_cast<int>(256 * clamp(rf, 0.0, 0.999)) & 0xff;
-        auto g = static_cast<int>(256 * clamp(gf, 0.0, 0.999)) & 0xff;
-        auto b = static_cast<int>(256 * clamp(bf, 0.0, 0.999)) & 0xff;
+        auto r = static_cast<int>(256 * std::clamp(rf, 0.0, 0.999)) & 0xff;
+        auto g = static_cast<int>(256 * std::clamp(gf, 0.0, 0.999)) & 0xff;
+        auto b = static_cast<int>(256 * std::clamp(bf, 0.0, 0.999)) & 0xff;
         int a  = 0xff;
 
         image[y * width + x] = (r << 24) + (g << 16) + (b << 8) + (a << 0);
