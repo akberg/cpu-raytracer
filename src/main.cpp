@@ -406,11 +406,11 @@ void renderUnityMesh()
     // New render
     Camera cam;
     cam.imageWidth      = 400;
-    cam.aspectRatio     = 1.0;
+    cam.aspectRatio     = 4.0 / 3.0;
     cam.vfov            = 80;
-    cam.samplesPerPixel = 100;
-    cam.maxDepth        = 20; // default 10
-    cam.lookAt          = Vec3(-1.1, 0.0, 0.0);
+    cam.samplesPerPixel = 50;
+    cam.maxDepth        = 15; // default 10
+    cam.lookAt          = Vec3(-1.1, 0.0, -0.5);
     cam.lookFrom        = Vec3(-1.3, 0.2, 2.4);
     cam.vup             = Vec3(0.0, 1.0, 0.0);
     cam.focusDist       = 1.5;
@@ -618,14 +618,18 @@ void renderCornellBox()
 
 int main(int argc, char* argv[])
 {
-    for (int i = 1; i < argc; i++) {
+    int render = 1;
+    if (argc > 1) {
+        sscanf(argv[1], "%d", &render);
+    }
+    for (int i = 2; i < argc; i++) {
         std::cerr << "Unexpected argument: " << argv[i] << std::endl;
     }
 
     std::cout << "A BVH node currently requires " << sizeof(BVH::Node)
               << " bytes.\n";
 
-    switch (8) {
+    switch (6) {
     case 1: renderEarth(); break;
     case 2: renderQuads(); break;        // Best time 21645ms
     case 3: renderOneBox(); break;       // Best time 7804ms
