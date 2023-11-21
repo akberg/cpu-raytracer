@@ -9,8 +9,8 @@
 #include "aabb.hpp"
 #include "hittable.hpp"
 // #include "hittableList.hpp"
-#include "rtweekend.hpp"
 #include "hittable.hpp"
+#include "rtweekend.hpp"
 #include "shape/triangle.hpp"
 
 #include <vector>
@@ -26,7 +26,8 @@ public:
 
     // Hittable
     bool
-    hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const override {
+    hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const override
+    {
         return intersectIterative(rootNodeIdx, r, tMin, tMax, rec);
     }
 
@@ -47,6 +48,12 @@ public:
         size_t right() const { return mLeftChildIdx + 1; }
         float cost() const { return primCount * aabb.area(); }
     };
+
+    struct Bin {
+        Aabb bounds;
+        int primCount = 0;
+    };
+
 private:
     /// @brief Update AABB bounds of root node.
     /// @param nodeIdx
@@ -86,34 +93,7 @@ private:
     /// @param axis Split axis
     /// @param pos Split position
     /// @return
-    float evaluateSAH(Node& node, int axis, float pos) {
-        // debug parameters: , int *lc, int *rc, float *la, float *ra
-        Aabb leftBox { .min = Vec3(1e30), .max = Vec3(-1e30) };
-        Aabb rightBox { .min = Vec3(1e30), .max = Vec3(-1e30) };
-        int leftCount = 0, rightCount = 0;
-        for (size_t i = 0; i < node.primCount; i++) {
-            auto prim = primitives[primIndices[node.firstPrimIdx + i]];
-            if (prim->centroid()[axis] < pos) {
-                leftCount++;
-                prim->growAABB(leftBox);
-                // leftBox.grow(prim->vertices[0]);
-                // leftBox.grow(prim->vertices[1]);
-                // leftBox.grow(prim->vertices[2]);
-            } else {
-                rightCount++;
-                prim->growAABB(rightBox);
-                // rightBox.grow(prim->vertices[0]);
-                // rightBox.grow(prim->vertices[1]);
-                // rightBox.grow(prim->vertices[2]);
-            }
-        }
-        // if (lc) *lc = leftCount;
-        // if (rc) *rc = rightCount;
-        // if (la) *la = leftBox.area();
-        // if (ra) *ra = rightBox.area();
-        float cost = leftCount * leftBox.area() + rightCount * rightBox.area();
-        return cost > 0.0 ? cost : 1e30f;
-    }
+    float evaluateSAH(Node& node, int axis, float pos);
 
 private:
     size_t rootNodeIdx = 0;

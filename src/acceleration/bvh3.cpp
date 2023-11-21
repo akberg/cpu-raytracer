@@ -92,12 +92,13 @@ float BVH::evaluateSAH(Node& node, int axis, float pos)
 
 double BVH::findBestSplitPlane(Node& node, int& axis, double& splitPos)
 {
-    // Uniform SAH. Instead of doing an exhaustive sweep of all primitives for a
+    // Binned SAH. Instead of doing an exhaustive sweep of all primitives for a
     // O(N^2) cost, step by uniform intervals for a O(N) cost.
     float bestCost = 1e30f;
     // ? What is then the best bin count? Would maybe depend on primitive count?
-    uint32_t bins  = 48;
+    uint32_t bins  = 512;
     for (uint32_t a = 0; a < 3; a++) {
+        // Find bounds of primitive centroids
         float boundsMin = 1e30f;
         float boundsMax = -1e30f;
         for (int i = 0; i < node.primCount; i++) {
@@ -105,13 +106,48 @@ double BVH::findBestSplitPlane(Node& node, int& axis, double& splitPos)
             boundsMin = std::min(boundsMin, (float)prim->centroid()[a]);
             boundsMax = std::max(boundsMax, (float)prim->centroid()[a]);
         }
-        float step      = (boundsMax - boundsMin) / bins;
-        for (uint32_t i = 0; i < bins; i++) {
-            double candidatePos = boundsMin + i * step;
-            float cost          = evaluateSAH(node, a, candidatePos);
-            if (cost < bestCost) {
-                bestCost = cost;
-                splitPos = candidatePos;
+        if (boundsMin == boundsMax) {
+            continue;
+        }
+        // Set scale size
+        float scale = bins / (boundsMax - boundsMin);
+        // Populate binds
+        Bin bin[bins];
+        for (int i = 0; i < node.primCount; i++) {
+            auto prim  = primitives[primIndices[node.mLeftChildIdx + i]];
+            int binIdx = std::min(
+                bins - 1,
+                (uint32_t)((prim->centroid()[a] - boundsMin) * scale));
+            bin[binIdx].primCount++;
+            prim->growAABB(bin[binIdx].bounds);
+        }
+        // Gather data for the plane between bins
+        float leftArea[bins - 1];
+        float rightArea[bins - 1];
+        int leftCount[bins - 1];
+        int rightCount[bins - 1];
+        Aabb leftBox;
+        Aabb rightBox;
+        int leftSum  = 0;
+        int rightSum = 0;
+        for (int i = 0; i < bins - 1; i++) {
+            leftSum += bin[i].primCount;
+            leftCount[i] = leftSum;
+            leftBox.grow(bin[i].bounds);
+            leftArea[i] = leftBox.area();
+            rightSum += bin[bins - 1 - i].primCount;
+            rightCount[bins - 2 - i] = rightSum;
+            rightBox.grow(bin[bins - 1 - i].bounds);
+            rightArea[bins - 2 - i] = rightBox.area();
+        }
+        // Calculate SAH cost for all planes
+        scale = (boundsMax - boundsMin) / bins;
+        for (uint32_t i = 0; i < bins - 1; i++) {
+            float planeCost =
+                leftCount[i] * leftArea[i] + rightCount[i] * rightArea[i];
+            if (planeCost < bestCost) {
+                bestCost = planeCost;
+                splitPos = boundsMin + scale * (i + 1);
                 axis     = a;
             }
         }
