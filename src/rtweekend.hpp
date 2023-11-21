@@ -10,8 +10,6 @@
 
 // Types
 
-/// Let's deprecate Point. It's always used together with Vec3
-using Point = glm::dvec3;
 using Vec3  = glm::dvec3;
 using Vec2  = glm::dvec2;
 using Color = glm::dvec3;
