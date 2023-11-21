@@ -6,8 +6,8 @@
 struct HitRecord;
 
 struct Aabb {
-    Vec3 min;
-    Vec3 max;
+    Vec3 min = Vec3(infinity);
+    Vec3 max = Vec3(-infinity);
 
     /// @brief Hit function from Hittable (not inheriting atm)
     /// @param ray Intersecting ray
