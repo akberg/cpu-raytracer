@@ -38,6 +38,11 @@ void Aabb::grow(Vec3 pt) {
     max = glm::max(max, pt);
 }
 
+void Aabb::grow(Aabb aabb) {
+    min = glm::min(min, aabb.min);
+    max = glm::max(max, aabb.max);
+}
+
 float Aabb::area() const {
     Vec3 e = max - min;
     return e.x * e.y + e.y * e.z + e.z * e.x;

@@ -26,6 +26,8 @@ struct Aabb {
 
     /// @brief Grow AABB to fit new point `pt`.
     void grow(Vec3 pt);
+    /// @brief Grow AABB to fit another AABB `aabb`.
+    void grow(Aabb aabb);
 
     /// @return Surface area of AABB
     float area() const;
