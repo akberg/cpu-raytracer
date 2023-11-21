@@ -99,8 +99,8 @@ inline Vec3 reflect(const Vec3& v, const Vec3& n) { return v - 2 * glm::dot(v, n
 /// @param e eta over eta prime
 /// @return
 inline Vec3 refract(const Vec3& v, const Vec3& n, double e) {
-    auto cosTheta     = fmin(glm::dot(-v, n), 1.0);
+    double cosTheta     = std::fmin(glm::dot(-v, n), 1.0);
     Vec3 rOutPerp     = e * (v + cosTheta * n);
-    Vec3 rOutParallel = -sqrt(fabs(1.0 - glm::dot(rOutPerp, rOutPerp))) * n;
+    Vec3 rOutParallel = -std::sqrt(std::fabs(1.0 - glm::dot(rOutPerp, rOutPerp))) * n;
     return rOutPerp + rOutParallel;
 }
