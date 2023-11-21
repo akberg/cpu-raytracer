@@ -89,7 +89,7 @@ float BVH::findBestSplitPlane(Node& node, int& axis, float& splitPos)
     // O(N^2) cost, step by uniform intervals for a O(N) cost.
     float bestCost = infinity;
     // ? What is then the best bin count? Would maybe depend on primitive count?
-    uint32_t bins  = 512;
+    uint32_t bins  = 8;
     for (uint32_t a = 0; a < 3; a++) {
         // Find bounds of primitive centroids
         float boundsMin = infinity;
@@ -106,7 +106,7 @@ float BVH::findBestSplitPlane(Node& node, int& axis, float& splitPos)
         float scale = bins / (boundsMax - boundsMin);
         // Populate binds
         Bin bin[bins];
-        for (int i = 0; i < node.primCount; i++) {
+        for (uint32_t i = 0; i < node.primCount; i++) {
             auto prim  = primitives[primIndices[node.mLeftChildIdx + i]];
             int binIdx = std::min(
                 bins - 1,
@@ -123,7 +123,7 @@ float BVH::findBestSplitPlane(Node& node, int& axis, float& splitPos)
         Aabb rightBox;
         int leftSum  = 0;
         int rightSum = 0;
-        for (int i = 0; i < bins - 1; i++) {
+        for (uint32_t i = 0; i < bins - 1; i++) {
             leftSum += bin[i].primCount;
             leftCount[i] = leftSum;
             leftBox.grow(bin[i].bounds);
