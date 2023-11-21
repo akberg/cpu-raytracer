@@ -26,7 +26,7 @@ public:
 
     // Hittable
     bool
-    hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const override {
+    hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const override {
         return intersectIterative(rootNodeIdx, r, tMin, tMax, rec);
     }
 
@@ -64,8 +64,8 @@ private:
     bool intersect(
         const size_t nodeIdx,
         const Ray& r,
-        const double tMin,
-        const double tMax,
+        const float tMin,
+        const float tMax,
         HitRecord& rec,
         int depth = 0) const;
 
@@ -76,8 +76,8 @@ private:
     bool intersectIterative(
         const size_t nodeIdx,
         const Ray& r,
-        const double tMin,
-        const double tMax,
+        const float tMin,
+        const float tMax,
         HitRecord& rec) const;
 
     /// @brief Evaluate SAH for the node on the given split axis and position.
@@ -86,31 +86,21 @@ private:
     /// @return
     float evaluateSAH(Node& node, int axis, float pos) {
         // debug parameters: , int *lc, int *rc, float *la, float *ra
-        Aabb leftBox { .min = Vec3(1e30), .max = Vec3(-1e30) };
-        Aabb rightBox { .min = Vec3(1e30), .max = Vec3(-1e30) };
+        Aabb leftBox { .min = Vec3(infinity), .max = Vec3(-infinity) };
+        Aabb rightBox { .min = Vec3(infinity), .max = Vec3(-infinity) };
         int leftCount = 0, rightCount = 0;
         for (size_t i = 0; i < node.primCount; i++) {
             auto prim = primitives[primIndices[node.firstPrimIdx + i]];
             if (prim->centroid()[axis] < pos) {
                 leftCount++;
                 prim->growAABB(leftBox);
-                // leftBox.grow(prim->vertices[0]);
-                // leftBox.grow(prim->vertices[1]);
-                // leftBox.grow(prim->vertices[2]);
             } else {
                 rightCount++;
                 prim->growAABB(rightBox);
-                // rightBox.grow(prim->vertices[0]);
-                // rightBox.grow(prim->vertices[1]);
-                // rightBox.grow(prim->vertices[2]);
             }
         }
-        // if (lc) *lc = leftCount;
-        // if (rc) *rc = rightCount;
-        // if (la) *la = leftBox.area();
-        // if (ra) *ra = rightBox.area();
         float cost = leftCount * leftBox.area() + rightCount * rightBox.area();
-        return cost > 0.0 ? cost : 1e30f;
+        return cost > 0.0 ? cost : infinity;
     }
 
 private:

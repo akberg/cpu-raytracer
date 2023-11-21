@@ -10,12 +10,13 @@
 
 // Types
 
-using Vec3  = glm::dvec3;
-using Vec2  = glm::dvec2;
-using Color = glm::dvec3;
+using Vec3  = glm::vec3;
+using Vec2  = glm::vec2;
+using Color = glm::vec3;
 
 [[maybe_unused]] static std::ostream&
-operator<<(std::ostream& os, const Vec3& p) {
+operator<<(std::ostream& os, const Vec3& p)
+{
     os << "Vec3 { " << p.x << ", " << p.y << ", " << p.z << " }";
     return os;
 }
@@ -27,47 +28,47 @@ using std::shared_ptr;
 
 // Constants
 
-const double infinity  = std::numeric_limits<double>::infinity();
-const double pi        = 3.1415926535897932385;
-const double nearZero = 1e-8;
+const float infinity = std::numeric_limits<float>::infinity();
+const float pi       = 3.1415926535897932385f;
+const float nearZero = 1e-8f;
 
 // Utility functions
 
-inline double degreesToRadians(double degrees) { return degrees * pi / 180.0; }
+inline float degreesToRadians(float degrees) { return degrees * pi / 180.0f; }
 
 inline int randomInt(int min, int max) { return min + rand() % (max - min); }
 
-// `double` utilities
+
+// `float` utilities
 
 /// @brief Return a random float in the [0, 1)
-inline double randomDouble() { return rand() / (RAND_MAX + 1.0); }
+inline float randomFloat() { return (float)rand() / ((float)RAND_MAX + 1.0f); }
 
-inline double randomDouble(double min, double max) {
-    return min + (max - min) * randomDouble();
-}
-
-/// @brief Clamp a value `x` between `min` and `max`
-/// @return MIN(max, MAX(min, x))
-inline double clamp(double x, double min, double max) {
-    if (x < min) return min;
-    if (x > max) return max;
-    return x;
+inline float randomFloat(float min, float max)
+{
+    return min + (max - min) * randomFloat();
 }
 
 // `Vec3` utilities
 
-inline Vec3 randomVec3() {
-    return Vec3(randomDouble(), randomDouble(), randomDouble());
+inline Vec3 randomVec3()
+{
+    return Vec3(randomFloat(), randomFloat(), randomFloat());
 }
 
-inline Vec3 randomVec3(double min, double max) {
-    return Vec3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
+inline Vec3 randomVec3(float min, float max)
+{
+    return Vec3(
+        randomFloat(min, max),
+        randomFloat(min, max),
+        randomFloat(min, max));
 }
 
-inline Vec3 randomInUnitSphere() {
+inline Vec3 randomInUnitSphere()
+{
     while (true) {
-        Vec3 v = randomVec3(-1.0, 1.0);
-        if (glm::dot(v, v) < 1.0) return v;
+        Vec3 v = randomVec3(-1.0f, 1.0f);
+        if (glm::dot(v, v) < 1.0f) return v;
     }
 }
 
@@ -76,31 +77,38 @@ inline Vec3 randomUnitVector() { return glm::normalize(randomInUnitSphere()); }
 /// @brief Return true if the vector is near zero in all dimensions
 /// @param v
 /// @return
-inline bool vec3NearZero(const Vec3& v) {
-    const double s = nearZero;
+inline bool vec3NearZero(const Vec3& v)
+{
+    const float s = nearZero;
     return (fabs(v.x) < s) && (fabs(v.y) < s) && (fabs(v.z) < s);
 }
 
-inline Vec3 randomInUnitDisk() {
-    for(;;) {
-        auto p = Vec3(randomDouble(-1.0, 1.0), randomDouble(-1.0, 1.0), 0.0);
-        if (glm::dot(p, p) < 1.0)
-            return p;
+inline Vec3 randomInUnitDisk()
+{
+    for (;;) {
+        auto p = Vec3(randomFloat(-1.0f, 1.0f), randomFloat(-1.0f, 1.0f), 0.0f);
+        if (glm::dot(p, p) < 1.0f) return p;
     }
 }
 
 // Vec3 ray utilities
 
-inline Vec3 reflect(const Vec3& v, const Vec3& n) { return v - 2 * glm::dot(v, n) * n; }
+inline Vec3 reflect(const Vec3& v, const Vec3& n)
+{
+    return v - 2 * glm::dot(v, n) * n;
+}
 
-/// @brief Implementing Snell's law for refraction: eta*sin(theta) = etai*sin(thetai).
+/// @brief Implementing Snell's law for refraction: eta*sin(theta) =
+/// etai*sin(thetai).
 /// @param v
 /// @param n
 /// @param e eta over eta prime
 /// @return
-inline Vec3 refract(const Vec3& v, const Vec3& n, double e) {
-    double cosTheta     = std::fmin(glm::dot(-v, n), 1.0);
-    Vec3 rOutPerp     = e * (v + cosTheta * n);
-    Vec3 rOutParallel = -std::sqrt(std::fabs(1.0 - glm::dot(rOutPerp, rOutPerp))) * n;
+inline Vec3 refract(const Vec3& v, const Vec3& n, float e)
+{
+    float cosTheta = std::fmin(glm::dot(-v, n), 1.0f);
+    Vec3 rOutPerp  = e * (v + cosTheta * n);
+    Vec3 rOutParallel =
+        -std::sqrt(std::fabs(1.0f - glm::dot(rOutPerp, rOutPerp))) * n;
     return rOutPerp + rOutParallel;
 }

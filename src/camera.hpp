@@ -20,9 +20,9 @@ public:
     int imageWidth      = 100;
 
     // Image settings - - -
-    double aspectRatio = 1.0;
+    float aspectRatio = 1.0;
     /// @brief Vertical FoV angle
-    double vfov        = 90;
+    float vfov        = 90;
 
     // Camera settings - - -
     Vec3 lookFrom    = Vec3(0.0, 0.0, 1.0); ///< Point camera is looking from
@@ -31,9 +31,9 @@ public:
     Color background = Color(0.0); ///< Background colour, defaults to black
 
     /// @brief Variation angle of rays through each pixel
-    double defocusAngle = 0;
+    float defocusAngle = 0;
     /// @brief Distance from camera lookFrom point to plane of perfect focus
-    double focusDist    = 10.0;
+    float focusDist    = 10.0;
 
     void render(const Hittable& world);
     /// @brief Get a ray for pixel (u,v), randomly sampled within the square
@@ -42,7 +42,7 @@ public:
     /// @param v Vertical position
     /// @param exact Set true to return exact direction instead of sampling
     /// within pixel square
-    Ray getRay(double u, double v, bool exact = false) const;
+    Ray getRay(float u, float v, bool exact = false) const;
 
 private:
     void initialize();

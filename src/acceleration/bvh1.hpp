@@ -24,7 +24,7 @@ public:
 
     // Hittable
     bool
-    hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const override {
+    hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const override {
         return intersect(rootNodeIdx, r, tMin, tMax, rec);
     }
 
@@ -62,8 +62,8 @@ private:
     bool intersect(
         const size_t nodeIdx,
         const Ray& r,
-        const double tMin,
-        const double tMax,
+        const float tMin,
+        const float tMax,
         HitRecord& rec,
         int depth = 0) const;
 

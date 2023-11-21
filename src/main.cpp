@@ -99,16 +99,16 @@ HittableList spheresAndTris()
 std::vector<shared_ptr<Primitive>> triangles(int count)
 {
     auto tris      = std::vector<shared_ptr<Primitive>>(count);
-    double maxPos  = 2.5;
-    double maxEdge = 0.5;
+    float maxPos  = 2.5;
+    float maxEdge = 0.5;
     for (int i = 0; i < count; i++) {
 
-        Vec3 v0 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5)
-                * maxPos * 2.0;
-        Vec3 v1 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5)
-                * maxEdge * 2.0;
-        Vec3 v2 = (Vec3(randomDouble(), randomDouble(), randomDouble()) - 0.5)
-                * maxEdge * 2.0;
+        Vec3 v0 = (Vec3(randomFloat(), randomFloat(), randomFloat()) - 0.5f)
+                * maxPos * 2.0f;
+        Vec3 v1 = (Vec3(randomFloat(), randomFloat(), randomFloat()) - 0.5f)
+                * maxEdge * 2.0f;
+        Vec3 v2 = (Vec3(randomFloat(), randomFloat(), randomFloat()) - 0.5f)
+                * maxEdge * 2.0f;
 
         tris[i] = make_shared<Triangle>(
             v0,
@@ -210,7 +210,7 @@ void renderOneSphere()
     f.close();
 }
 
-void renderEarth(double hour = 0.0)
+void renderEarth(float hour = 0.0)
 {
     TaskTimer tt;
     std::ofstream f;
@@ -418,7 +418,7 @@ void renderUnityMesh()
 
     auto tris     = loadTriFile("resources/unity.tri");
     auto light    = make_shared<DiffuseLight>(Color(30.0));
-    double yPlane = -1.3;
+    float yPlane = -1.3;
     tris.push_back(make_shared<Triangle>(
         Vec3(1.0, yPlane, 1.0),
         Vec3(0.0, yPlane, 1.0),

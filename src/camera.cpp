@@ -6,7 +6,7 @@
 void Camera::render(const Hittable& world)
 {
     initialize();
-    double sampleCoefficient = 1.0 / static_cast<double>(samplesPerPixel);
+    float sampleCoefficient = 1.0 / static_cast<float>(samplesPerPixel);
     // Tiling can greatly improve render time, but will be scene dependent and
     // completely irrelevant for BVH structures. Tesing uniti.tri
     // (samples=16,depth=8, width=400) on Arm remote machine, tile size:
@@ -23,8 +23,8 @@ void Camera::render(const Hittable& world)
                     int x = i + it;
                     int y = j + jt;
                     for (int s = 0; s < samplesPerPixel; s++) {
-                        auto u = (x + randomDouble()) / (img.width - 1);
-                        auto v = (y + randomDouble()) / (img.height - 1);
+                        auto u = (x + randomFloat()) / (img.width - 1);
+                        auto v = (y + randomFloat()) / (img.height - 1);
                         auto r = getRay(x, y);
                         pxColor += rayColor(r, world, maxDepth);
                         // if (j % 40 == 0 && i % 20 == 0 && !s)
@@ -50,7 +50,7 @@ void Camera::render(const Hittable& world)
 /// @param v Vertical position
 /// @param exact Set true to return exact direction instead of sampling
 /// within pixel square
-Ray Camera::getRay(double u, double v, bool exact) const
+Ray Camera::getRay(float u, float v, bool exact) const
 {
     auto pixelCenter = pixel00Loc + (u * uPixelDelta) + (v * vPixelDelta);
     auto pixelSample = pixelCenter + (exact ? Vec3(0.0) : pixelSampleSquare());
@@ -82,11 +82,11 @@ void Camera::initialize()
 
     // Determine viewport dimensions
     // // auto focalLength    = 1.0;
-    auto theta          = degreesToRadians(vfov);
-    auto h              = tan(theta / 2);
-    auto viewportHeight = 2 * h * focusDist;
-    auto viewportWidth =
-        viewportHeight * (static_cast<double>(imageWidth) / imageHeight);
+    float theta          = degreesToRadians(vfov);
+    float h              = std::tan(theta / 2.0);
+    float viewportHeight = 2 * h * focusDist;
+    float viewportWidth =
+        viewportHeight * (static_cast<float>(imageWidth) / imageHeight);
 
     // Calculate the vectors across the horizontal and down the vertical
     // viewport edges. Edges go from lower left corner.
@@ -95,18 +95,18 @@ void Camera::initialize()
 
     // Calculate the horizontal and vertical delta vectors from pixel to
     // pixel.
-    uPixelDelta = uViewport / static_cast<double>(imageWidth);
-    vPixelDelta = vViewport / static_cast<double>(imageHeight);
+    uPixelDelta = uViewport / static_cast<float>(imageWidth);
+    vPixelDelta = vViewport / static_cast<float>(imageHeight);
 
     // Calculate the location of the upper left pixel.
     // sub focalLength, looking towards negative Z.
     // Place location in the middle of the pixel's covered area.
     viewportLowerLeft =
-        origin - (focusDist * w) - uViewport / 2.0 - vViewport / 2.0;
-    pixel00Loc = viewportLowerLeft + 0.5 * (uPixelDelta + vPixelDelta);
+        origin - (focusDist * w) - uViewport / 2.0f - vViewport / 2.0f;
+    pixel00Loc = viewportLowerLeft + 0.5f * (uPixelDelta + vPixelDelta);
 
     // Calculate camera defocus disk basis vectors.
-    auto defocusRadius =
+    float defocusRadius =
         focusDist * glm::tan(degreesToRadians(defocusAngle / 2.0));
     defocusDisk_u = u * defocusRadius;
     defocusDisk_v = v * defocusRadius;
@@ -123,8 +123,8 @@ void Camera::initialize()
 /// origin.
 Vec3 Camera::pixelSampleSquare() const
 {
-    auto px = -0.5 + randomDouble();
-    auto py = -0.5 + randomDouble();
+    float px = -0.5 + randomFloat();
+    float py = -0.5 + randomFloat();
     return (px * uPixelDelta) + (py * vPixelDelta);
 }
 
@@ -139,7 +139,7 @@ Color Camera::rayColor(const Ray& ray, const Hittable& world, int depth)
 {
     HitRecord rec;
     // Depth limit exceeded, no more light is gathered
-    if (depth <= 0) return Color(0.0, 0.0, 0.0);
+    if (depth <= 0) return Color(0.0);
     // Return background colour if we hit nothing
     if (!world.hit(ray, nearZero, infinity, rec))
         return background; // bgRayColor(ray);

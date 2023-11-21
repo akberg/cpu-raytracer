@@ -8,12 +8,12 @@
 class Material;
 
 struct HitRecord {
-    Vec3 p      = Vec3(0, 0, 0);
-    Vec3 normal = Vec3(1, 0, 0);
+    Vec3 p      = Vec3(0.0);
+    Vec3 normal = Vec3(1.0, 0.0, 0.0);
     /// @brief Length of ray at intersection
-    double t    = 0;
+    float t    = 0;
     /// @brief Texture coordinates
-    double u = 0, v = 0;
+    float u = 0, v = 0;
 
     /// @brief Setting the front face when computing geometry, as opposed to
     /// computing it when colouring.
@@ -27,7 +27,7 @@ struct HitRecord {
     }
 
     HitRecord() { }
-    HitRecord(Vec3 p, double t, const Ray& ray, const Vec3& outwardNormal)
+    HitRecord(Vec3 p, float t, const Ray& ray, const Vec3& outwardNormal)
         : p(p)
         , t(t)
     {
@@ -45,7 +45,7 @@ public:
     /// @param rec HitRecord to hold further information in case of a hit.
     /// @return True if there is an intersection.
     virtual bool
-    hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const = 0;
+    hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const = 0;
 };
 
 struct Aabb;

@@ -16,7 +16,7 @@ BVH::BVH(const std::vector<shared_ptr<Primitive>>& primitives)
     nodes.resize(N * 2);
     // Populate index list
     primIndices.resize(N);
-    for (size_t i = 0; i < N; i++) primIndices[i] = i;
+    for (uint32_t i = 0; i < N; i++) primIndices[i] = i;
 
     Node& root         = nodes[rootNodeIdx];
     root.mLeftChildIdx = 0;
@@ -26,7 +26,7 @@ BVH::BVH(const std::vector<shared_ptr<Primitive>>& primitives)
     // std::cerr << "Start recursive subdivide()\n";
     subdivide(rootNodeIdx);
 }
-std::string BVH::tree(size_t nodeIdx, int depth) const
+std::string BVH::tree(uint32_t nodeIdx, int depth) const
 {
     const Node& node = nodes[nodeIdx];
     int indent       = depth;
@@ -45,13 +45,13 @@ std::string BVH::tree(size_t nodeIdx, int depth) const
     return os.str();
 }
 
-void BVH::updateNodeBounds(const size_t nodeIdx)
+void BVH::updateNodeBounds(const uint32_t nodeIdx)
 {
     Node& node    = nodes[nodeIdx];
-    node.aabb.min = Vec3(1e30f);
-    node.aabb.max = Vec3(-1e30f);
-    size_t first  = node.firstPrimIdx;
-    for (size_t i = 0; i < node.primCount; i++) {
+    node.aabb.min = Vec3(infinity);
+    node.aabb.max = Vec3(-infinity);
+    uint32_t first  = node.firstPrimIdx;
+    for (uint32_t i = 0; i < node.primCount; i++) {
         auto leafPrimIdx = primIndices[first + i];
         // std::cerr << "updateNodeBounds(" << nodeIdx
         //           << "): primCount=" << node.primCount
@@ -59,24 +59,17 @@ void BVH::updateNodeBounds(const size_t nodeIdx)
         //           << " leafPrimIdx=" << leafPrimIdx
         //           << " primitives.size()=" << primitives.size() << "\n";
         auto leafPrim    = primitives[leafPrimIdx];
-        // std::cerr << leafPrim->vertices[0] << "\n";
 
         leafPrim->growAABB(node.aabb);
-        // node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[0]);
-        // node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[1]);
-        // node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[2]);
-        // node.aabb.max = glm::max(node.aabb.max, leafPrim->vertices[0]);
-        // node.aabb.max = glm::max(node.aabb.max, leafPrim->vertices[1]);
-        // node.aabb.max = glm::max(node.aabb.max, leafPrim->vertices[2]);
     }
 }
 
 float BVH::evaluateSAH(Node& node, int axis, float pos)
 {
-    Aabb leftBox { .min = Vec3(1e30), .max = Vec3(-1e30) };
-    Aabb rightBox { .min = Vec3(1e30), .max = Vec3(-1e30) };
+    Aabb leftBox { .min = Vec3(infinity), .max = Vec3(-infinity) };
+    Aabb rightBox { .min = Vec3(infinity), .max = Vec3(-infinity) };
     int leftCount = 0, rightCount = 0;
-    for (size_t i = 0; i < node.primCount; i++) {
+    for (uint32_t i = 0; i < node.primCount; i++) {
         auto prim = primitives[primIndices[node.firstPrimIdx + i]];
         if (prim->centroid()[axis] < pos) {
             leftCount++;
@@ -87,20 +80,20 @@ float BVH::evaluateSAH(Node& node, int axis, float pos)
         }
     }
     float cost = leftCount * leftBox.area() + rightCount * rightBox.area();
-    return cost > 0.0 ? cost : 1e30f;
+    return cost > 0.0 ? cost : infinity;
 }
 
-double BVH::findBestSplitPlane(Node& node, int& axis, double& splitPos)
+float BVH::findBestSplitPlane(Node& node, int& axis, float& splitPos)
 {
     // Binned SAH. Instead of doing an exhaustive sweep of all primitives for a
     // O(N^2) cost, step by uniform intervals for a O(N) cost.
-    float bestCost = 1e30f;
+    float bestCost = infinity;
     // ? What is then the best bin count? Would maybe depend on primitive count?
     uint32_t bins  = 512;
     for (uint32_t a = 0; a < 3; a++) {
         // Find bounds of primitive centroids
-        float boundsMin = 1e30f;
-        float boundsMax = -1e30f;
+        float boundsMin = infinity;
+        float boundsMax = -infinity;
         for (int i = 0; i < node.primCount; i++) {
             auto prim = primitives[primIndices[node.mLeftChildIdx + i]];
             boundsMin = std::min(boundsMin, (float)prim->centroid()[a]);
@@ -145,6 +138,10 @@ double BVH::findBestSplitPlane(Node& node, int& axis, double& splitPos)
         for (uint32_t i = 0; i < bins - 1; i++) {
             float planeCost =
                 leftCount[i] * leftArea[i] + rightCount[i] * rightArea[i];
+            // std::cerr << "cost: " << planeCost << " : " << leftCount[i] << "
+            // : "
+            //           << leftArea[i] << " : " << rightCount[i] << " : "
+            //           << rightArea[i] << "\n";
             if (planeCost < bestCost) {
                 bestCost = planeCost;
                 splitPos = boundsMin + scale * (i + 1);
@@ -155,14 +152,14 @@ double BVH::findBestSplitPlane(Node& node, int& axis, double& splitPos)
     return bestCost;
 }
 
-void BVH::subdivide(const size_t nodeIdx)
+void BVH::subdivide(const uint32_t nodeIdx)
 {
     Node& node = nodes[nodeIdx];
     // 1. Determine the axis and position of the split plane, using SAH.
 
     // 1a. Exhaustive SAH evaluation to find best split.
-    int axis;        //   = -1;
-    double splitPos; // = 0;
+    int axis;       //   = -1;
+    float splitPos; // = 0;
     float splitCost = findBestSplitPlane(node, axis, splitPos);
 
     // 1b. Evaluate if a split is actually improving from the parent node.
@@ -192,10 +189,10 @@ void BVH::subdivide(const size_t nodeIdx)
         return;
     }
     // Create child nodes
-    size_t leftChildIdx  = nodesUsed++;
-    size_t rightChildIdx = nodesUsed++;
+    uint32_t leftChildIdx  = nodesUsed++;
+    uint32_t rightChildIdx = nodesUsed++;
     // Right child index is implicit, handled by member getter functions.
-    size_t firstPrimIdx  = node.firstPrimIdx;
+    uint32_t firstPrimIdx  = node.firstPrimIdx;
     node.mLeftChildIdx   = leftChildIdx;
 
     nodes[leftChildIdx].firstPrimIdx  = firstPrimIdx;
@@ -215,10 +212,10 @@ void BVH::subdivide(const size_t nodeIdx)
 }
 
 bool BVH::intersect(
-    const size_t nodeIdx,
+    const uint32_t nodeIdx,
     const Ray& r,
-    const double tMin,
-    const double tMax,
+    const float tMin,
+    const float tMax,
     HitRecord& rec,
     int depth) const
 {
@@ -230,7 +227,7 @@ bool BVH::intersect(
     bool anyHit  = false;
     auto closest = tMax;
     if (node.isLeaf()) {
-        for (size_t i = 0; i < node.primCount; i++) {
+        for (uint32_t i = 0; i < node.primCount; i++) {
             // Intersect triangles
             auto prim = primitives[primIndices[node.firstPrimIdx + i]];
             if (prim->hit(r, tMin, closest, tempRec)) {
@@ -259,10 +256,10 @@ bool BVH::intersect(
 }
 
 bool BVH::intersectIterative(
-    const size_t nodeIdx,
+    const uint32_t nodeIdx,
     const Ray& r,
-    const double tMin,
-    const double tMax,
+    const float tMin,
+    const float tMax,
     HitRecord& rec) const
 {
     const Node* node = &nodes[rootNodeIdx];
@@ -276,7 +273,7 @@ bool BVH::intersectIterative(
     for (;;) {
         if (node->isLeaf()) {
             // Intersect leaf node's primitives
-            for (size_t i = 0; i < node->primCount; i++) {
+            for (uint32_t i = 0; i < node->primCount; i++) {
                 auto prim = primitives[primIndices[node->firstPrimIdx + i]];
                 if (prim->hit(r, tMin, closest, tempRec)) {
                     anyHit  = true;
@@ -307,7 +304,7 @@ bool BVH::intersectIterative(
             std::swap(dist1.t, dist2.t);
             std::swap(child1, child2);
         }
-        if (dist1.t == 1e30) {
+        if (dist1.t == infinity) {
             if (!stackPtr) {
                 // No more nodes to check, return current result
                 return anyHit;
@@ -317,7 +314,7 @@ bool BVH::intersectIterative(
             // Prepare child1
             node = child1;
             // Push child2 to stack for processing next
-            if (dist2.t != 1e30) stack[stackPtr++] = child2;
+            if (dist2.t != infinity) stack[stackPtr++] = child2;
         }
     }
 }

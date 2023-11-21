@@ -40,7 +40,7 @@ public:
         // }
 
         // gamma=2 correction
-        double gamma = 1.25;
+        float gamma = 1.25;
         auto rf      = std::pow(color.r, 1.0 / gamma);
         auto gf      = std::pow(color.g, 1.0 / gamma);
         auto bf      = std::pow(color.b, 1.0 / gamma);
@@ -57,9 +57,9 @@ public:
     Color getPixel(int x, int y) const {
         int c = image[y * width + x];
         return Color(
-            static_cast<double>((c >> 24) & 0xff) / 256.0,
-            static_cast<double>((c >> 16) & 0xff) / 256.0,
-            static_cast<double>((c >> 8) & 0xff) / 256.0);
+            static_cast<float>((c >> 24) & 0xff) / 256.0,
+            static_cast<float>((c >> 16) & 0xff) / 256.0,
+            static_cast<float>((c >> 8) & 0xff) / 256.0);
     }
 
     void writeImage(std::ostream& os) override {
@@ -124,16 +124,16 @@ public:
         x = std::clamp(x, 0, mWidth);
         y = std::clamp(y, 0, mHeight);
 
-        double r =
-            static_cast<double>(data[y * scanlineSize + x * channels])
+        float r =
+            static_cast<float>(data[y * scanlineSize + x * channels])
             / 255.0;
-        double g =
-            static_cast<double>(data[y * scanlineSize + x * channels + 1])
+        float g =
+            static_cast<float>(data[y * scanlineSize + x * channels + 1])
             / 255.0;
-        double b =
-            static_cast<double>(data[y * scanlineSize + x * channels + 2])
+        float b =
+            static_cast<float>(data[y * scanlineSize + x * channels + 2])
             / 255.0;
-        double a = channels >= 4
+        float a = channels >= 4
                      ? data[y * scanlineSize + x * channels + 2]
                      : 1.0;
         return Color(r, g, b);

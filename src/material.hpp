@@ -53,9 +53,9 @@ public:
 
 class Metal : public Material {
 public:
-    Metal(shared_ptr<Texture> a, double f) : albedo(a), fuzz(f < 1 ? f : 1) { }
+    Metal(shared_ptr<Texture> a, float f) : albedo(a), fuzz(f < 1 ? f : 1) { }
     Metal(shared_ptr<Texture> a) : Metal(a, 0.0) { }
-    Metal(const Color& a, double f)
+    Metal(const Color& a, float f)
         : Metal(make_shared<SolidColorTexture>(a), f)
     { }
     Metal(const Color& a) : Metal(make_shared<SolidColorTexture>(a)) { }
@@ -74,8 +74,8 @@ public:
         Color& attenuance,
         Ray& scattered) const override;
 
-    double getFuzz() const { return fuzz; }
-    double setFuzz(double f)
+    float getFuzz() const { return fuzz; }
+    float setFuzz(float f)
     {
         fuzz = f < 1 ? f : 1;
         return fuzz;
@@ -85,7 +85,7 @@ public:
     shared_ptr<Texture> albedo;
 
 private:
-    double fuzz = 0;
+    float fuzz = 0;
 };
 
 class TwoSidedMaterial : public Material {
@@ -116,7 +116,7 @@ public:
 
 class Dielectric : public Material {
 public:
-    Dielectric(double refractionIndex) : ir(refractionIndex) { }
+    Dielectric(float refractionIndex) : ir(refractionIndex) { }
     std::string name() const override { return "Dielectric"; }
 
     virtual bool scatter(
@@ -127,10 +127,10 @@ public:
 
 public:
     /// @brief Index of refraction
-    double ir;
+    float ir;
 
 private:
-    static double reflectance(double cosine, double refIdx)
+    static float reflectance(float cosine, float refIdx)
     {
         // Schlick's approximation for reflectance
         auto r0 = (1 - refIdx) / (1 + refIdx);

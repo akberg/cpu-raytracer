@@ -9,7 +9,7 @@ class Plane : public Hittable {
 public:
     Plane(const Vec3& c, const Vec3& n, shared_ptr<Material> m);
     virtual ~Plane() = default;
-    virtual bool hit(const Ray& ray, double tMin, double tMax, HitRecord& rec)
+    virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& rec)
         const override;
     // virtual Vec3 origo() const override { return center; }
 

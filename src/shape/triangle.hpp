@@ -15,7 +15,7 @@
 class Triangle : public Primitive {
 public:
     Triangle(Vec3 v0, Vec3 v1, Vec3 v2, shared_ptr<Material> m)
-        : mCentroid((v0 + v1 + v2) * 0.3333)
+        : mCentroid((v0 + v1 + v2) * 0.333f)
         , mat(m) {
         vertices[0] = v0;
         vertices[1] = v1;
@@ -26,9 +26,9 @@ public:
     /// @brief Mõller-Trumbore triangle intersection. Assumes clockwise normal.
     /// @return
     bool
-    hit(const Ray& r, double tMin, double tMax, HitRecord& rec) const override {
+    hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const override {
         triIntersections++; // Counting total no. of intersections.
-        const double epsilon = 0.0001;
+        const float epsilon = nearZero;
 
         const auto edge1 = vertices[1] - vertices[0];
         const auto edge2 = vertices[2] - vertices[0];

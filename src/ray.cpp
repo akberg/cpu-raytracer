@@ -35,32 +35,32 @@ std::string logIntersections()
     return ss.str();
 }
 
-Color bgRayColor(const Ray& r)
-{
-    switch (rayBackground) {
-    // case RayBG::HDRI: {
-    //     if (rayHdri->height()) {
-    //         Vec3 p = r.origin /
-    //         auto theta = std::acos(-r.direction.y);
-    //         auto phi   = std::atan2(-r.direction.z, r.direction.x) + pi;
+// Color bgRayColor(const Ray& r)
+// {
+//     switch (rayBackground) {
+//     // case RayBG::HDRI: {
+//     //     if (rayHdri->height()) {
+//     //         Vec3 p = r.origin /
+//     //         auto theta = std::acos(-r.direction.y);
+//     //         auto phi   = std::atan2(-r.direction.z, r.direction.x) + pi;
 
-    //         auto u = static_cast<int>(phi / (2.0 * pi) * rayHdri->width());
-    //         auto v = static_cast<int>(1.0 - (theta / pi) *
-    //         rayHdri->height());
+//     //         auto u = static_cast<int>(phi / (2.0 * pi) * rayHdri->width());
+//     //         auto v = static_cast<int>(1.0 - (theta / pi) *
+//     //         rayHdri->height());
 
-    //         return rayHdri->getPixel(u, v);
-    //     }
-    // }
-    case RayBG::SINGLE_LIGHT: {
-        auto lightDir = glm::normalize(r.origin - rayBgLightSource);
-        auto t = std::clamp(glm::dot(lightDir, r.direction) + 1.0, 0.0, 1.0);
-        return t * rayBgColor;
-    }
-    case RayBG::CONSTANT: return rayBgColor;
-    case RayBG::GRADIENT:
-    default: {
-        auto t = 0.5 * (r.direction.y + 1.0);
-        return (1.0 - t) * Color(1.0, 0.75, 0.8) + t * Color(0.2, 0.6, 1.0);
-    }
-    }
-}
+//     //         return rayHdri->getPixel(u, v);
+//     //     }
+//     // }
+//     case RayBG::SINGLE_LIGHT: {
+//         auto lightDir = glm::normalize(r.origin - rayBgLightSource);
+//         auto t = std::clamp(glm::dot(lightDir, r.direction) + 1.0, 0.0, 1.0);
+//         return t * rayBgColor;
+//     }
+//     case RayBG::CONSTANT: return rayBgColor;
+//     case RayBG::GRADIENT:
+//     default: {
+//         auto t = 0.5 * (r.direction.y + 1.0);
+//         return (1.0 - t) * Color(1.0, 0.75, 0.8) + t * Color(0.2, 0.6, 1.0);
+//     }
+//     }
+// }

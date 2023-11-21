@@ -9,7 +9,7 @@ Plane::Plane(const Vec3& c, const Vec3& n, shared_ptr<Material> m)
     , normal(n)
     , mat(m) { }
 
-bool Plane::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const {
+bool Plane::hit(const Ray& ray, float tMin, float tMax, HitRecord& rec) const {
     auto denom = glm::dot(normal, ray.direction); // < 0
 
     if (fabs(denom) < nearZero) return false;

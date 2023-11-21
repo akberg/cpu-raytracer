@@ -2,11 +2,11 @@
 
 #include <cmath> // floor
 
-Color SolidColorTexture::value(double u, double v, const Vec3& p) const {
+Color SolidColorTexture::value(float u, float v, const Vec3& p) const {
     return colorVal;
 }
 
-Color CheckerTexture::value(double u, double v, const Vec3& p) const {
+Color CheckerTexture::value(float u, float v, const Vec3& p) const {
     auto ui = static_cast<int>(std::floor(invScale * u));
     auto vi = static_cast<int>(std::floor(invScale * v));
     // auto xi = static_cast<int>(std::floor(invScale * p.x));

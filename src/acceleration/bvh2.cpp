@@ -44,8 +44,8 @@ std::string blikker_pt2::BVH::tree(size_t nodeIdx, int depth) const {
 
 void blikker_pt2::BVH::updateNodeBounds(const size_t nodeIdx) {
     Node& node = nodes[nodeIdx];
-    node.aabb.min = Vec3(1e30f);
-    node.aabb.max = Vec3(-1e30f);
+    node.aabb.min = Vec3(infinity);
+    node.aabb.max = Vec3(-infinity);
     size_t first  = node.firstPrimIdx;
     for (size_t i = 0; i < node.primCount; i++) {
         auto leafPrimIdx = primIndices[first + i];
@@ -73,13 +73,13 @@ void blikker_pt2::BVH::subdivide(const size_t nodeIdx) {
 
     // 1a. Exhaustive SAH evaluation to find best split.
     int bestAxis   = -1;
-    double bestPos = 0;
-    float bestCost = 1e30f;
+    float bestPos = 0;
+    float bestCost = infinity;
 
     for (int axis = 0; axis < 3; axis++)
         for (int i = 0; i < node.primCount; i++) {
             auto tri = primitives[primIndices[node.firstPrimIdx + i]];
-            double candidatePos = tri->centroid()[axis];
+            float candidatePos = tri->centroid()[axis];
             float cost          = evaluateSAH(node, axis, candidatePos);
             if (cost < bestCost) {
                 bestCost = cost;
@@ -145,8 +145,8 @@ void blikker_pt2::BVH::subdivide(const size_t nodeIdx) {
 bool blikker_pt2::BVH::intersect(
     const size_t nodeIdx,
     const Ray& r,
-    const double tMin,
-    const double tMax,
+    const float tMin,
+    const float tMax,
     HitRecord& rec,
     int depth) const {
     const Node& node = nodes[nodeIdx];
@@ -188,8 +188,8 @@ bool blikker_pt2::BVH::intersect(
 bool blikker_pt2::BVH::intersectIterative(
     const size_t nodeIdx,
     const Ray& r,
-    const double tMin,
-    const double tMax,
+    const float tMin,
+    const float tMax,
     HitRecord& rec) const {
     const Node* node = &nodes[rootNodeIdx];
     const Node* stack[64]; // Magic number stack size
@@ -232,7 +232,7 @@ bool blikker_pt2::BVH::intersectIterative(
             std::swap(dist1.t, dist2.t);
             std::swap(child1, child2);
         }
-        if (dist1.t == 1e30) {
+        if (dist1.t == infinity) {
             if (!stackPtr) {
                 // No more nodes to check, return current result
                 return anyHit;
@@ -242,7 +242,7 @@ bool blikker_pt2::BVH::intersectIterative(
             // Prepare child1
             node = child1;
             // Push child2 to stack for processing next
-            if (dist2.t != 1e30) stack[stackPtr++] = child2;
+            if (dist2.t != infinity) stack[stackPtr++] = child2;
         }
     }
 }

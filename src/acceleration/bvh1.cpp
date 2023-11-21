@@ -44,18 +44,12 @@ std::string blikker_basic::BVH::tree(size_t nodeIdx, int depth) const {
 
 void blikker_basic::BVH::updateNodeBounds(const size_t nodeIdx) {
     Node& node = nodes[nodeIdx];
-    node.aabb.min = Vec3(1e30f);
-    node.aabb.max = Vec3(-1e30f);
+    node.aabb.min = Vec3(infinity);
+    node.aabb.max = Vec3(-infinity);
     size_t first  = node.firstPrimIdx;
     for (size_t i = 0; i < node.primCount; i++) {
         auto leafPrimIdx = primIndices[first + i];
-        // std::cerr << "updateNodeBounds(" << nodeIdx
-        //           << "): primCount=" << node.primCount
-        //           << " firstPrimIdx=" << node.firstPrimIdx << " i=" << i
-        //           << " leafPrimIdx=" << leafPrimIdx
-        //           << " primitives.size()=" << primitives.size() << "\n";
         auto leafPrim = primitives[leafPrimIdx];
-        // std::cerr << leafPrim->vertices[0] << "\n";
 
         node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[0]);
         node.aabb.min = glm::min(node.aabb.min, leafPrim->vertices[1]);
@@ -77,7 +71,7 @@ void blikker_basic::BVH::subdivide(const size_t nodeIdx) {
     // std::cerr << nodeIdx
     //           << "// 1. Determine the axis and position of the split plane: "
     //           << axis << "\n";
-    double splitPos = node.aabb.min[axis] + extent[axis] * 0.5;
+    float splitPos = node.aabb.min[axis] + extent[axis] * 0.5;
 
     // 2. Split the group of primitives in two halves using the split plane.
     // std::cerr << nodeIdx
@@ -129,8 +123,8 @@ void blikker_basic::BVH::subdivide(const size_t nodeIdx) {
 bool blikker_basic::BVH::intersect(
     const size_t nodeIdx,
     const Ray& r,
-    const double tMin,
-    const double tMax,
+    const float tMin,
+    const float tMax,
     HitRecord& rec,
     int depth) const {
     const Node& node = nodes[nodeIdx];

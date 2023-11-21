@@ -9,7 +9,7 @@
 static void writeColor(std::ostream& os, Color color)
 {
     // gamma=2 correction
-    double gamma = 1.25;
+    float gamma = 1.25;
     auto r       = std::pow(color.r, 1.0 / gamma);
     auto g       = std::pow(color.g, 1.0 / gamma);
     auto b       = std::pow(color.b, 1.0 / gamma);
@@ -25,7 +25,7 @@ static void writeColor(std::ostream& os, Color color, int samplesPerPixel)
     auto scale = 1.0 / samplesPerPixel;
 
     // gamma=2 correction
-    double gamma = 1.25;
+    float gamma = 1.25;
     auto r       = std::pow(color.r * scale, 1.0 / gamma);
     auto g       = std::pow(color.g * scale, 1.0 / gamma);
     auto b       = std::pow(color.b * scale, 1.0 / gamma);

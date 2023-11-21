@@ -1,6 +1,6 @@
 #include "sphere.hpp"
 
-bool Sphere::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const
+bool Sphere::hit(const Ray& ray, float tMin, float tMax, HitRecord& rec) const
 {
     sphereIntersections++;
     Vec3 oc     = ray.origin - center;
@@ -36,7 +36,7 @@ bool Sphere::hit(const Ray& ray, double tMin, double tMax, HitRecord& rec) const
     return true;
 }
 
-void Sphere::getSphereUV(const Vec3& p, double& u, double& v) const
+void Sphere::getSphereUV(const Vec3& p, float& u, float& v) const
 {
     auto theta = std::acos(-p.y);
     auto phi   = std::atan2(-p.z, p.x) + pi;
