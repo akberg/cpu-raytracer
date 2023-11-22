@@ -98,7 +98,7 @@ HittableList spheresAndTris()
 
 std::vector<shared_ptr<Primitive>> triangles(int count)
 {
-    auto tris      = std::vector<shared_ptr<Primitive>>(count);
+    auto tris     = std::vector<shared_ptr<Primitive>>(count);
     float maxPos  = 2.5;
     float maxEdge = 0.5;
     for (int i = 0; i < count; i++) {
@@ -416,8 +416,8 @@ void renderUnityMesh()
     cam.focusDist       = 1.5;
     cam.defocusAngle    = 0.0;
 
-    auto tris     = loadTriFile("resources/unity.tri");
-    auto light    = make_shared<DiffuseLight>(Color(30.0));
+    auto tris    = loadTriFile("resources/unity.tri");
+    auto light   = make_shared<DiffuseLight>(Color(30.0));
     float yPlane = -1.3;
     tris.push_back(make_shared<Triangle>(
         Vec3(1.0, yPlane, 1.0),
@@ -629,7 +629,7 @@ int main(int argc, char* argv[])
     std::cout << "A BVH node currently requires " << sizeof(BVH::Node)
               << " bytes.\n";
 
-    switch (6) {
+    switch (render) {
     case 1: renderEarth(); break;
     case 2: renderQuads(); break;        // Best time 21645ms
     case 3: renderOneBox(); break;       // Best time 7804ms
